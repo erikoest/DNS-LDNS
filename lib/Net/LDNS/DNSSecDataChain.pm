@@ -41,17 +41,6 @@ sub derive_trust_tree {
     return $tree;
 }
 
-sub derive_trust_tree_time {
-    my ($self, $rr, $checktime) = @_;
-
-    if (!Net::LDNS::GC::is_owned($rr) or Net::LDNS::GC::owner($rr) ne $self) {
-	die "The rr ($rr) must be in the data chain ($self)";
-    }
-    my $tree = _derive_trust_tree_time($self, $rr, $checktime);
-    Net::LDNS::GC::own($tree, $self) if (defined $tree);
-    return $tree;
-}
-
 1;
 =head1 NAME
 
@@ -64,7 +53,6 @@ Net::LDNS - Perl extension for the ldns library
   chain = new Net::LDNS::DNSSecDataChain
   chain->print(fp)
   chain->derive_trust_tree(rr)
-  chain->derive_trust_tree_time(rr, checktime)
 
   # Node attributes
   rrset = chain->rrset

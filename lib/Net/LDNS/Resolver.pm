@@ -163,21 +163,6 @@ sub fetch_valid_domain_keys {
     return $trusted;
 }
 
-sub fetch_valid_domain_keys_time {
-    my ($self, $domain, $keys, $checktime) = @_;
-
-    my $status;
-    my $trusted = _fetch_valid_domain_keys_time(
-	$self, $domain, $keys, $checktime, $status);
-    $Net::LDNS::last_status = $status;
-    if (!$trusted) {
-	return;
-    }
-
-    Net::LDNS::GC::own($trusted, $self);
-    return $trusted;
-}
-
 sub prepare_query_pkt {
     my ($self, $rdata, $type, $class, $flags) = @_;
 
@@ -330,13 +315,8 @@ Net::LDNS - Perl extension for the ldns library
 
   # DNSSec validation
   rrlist = r->fetch_valid_domain_keys(domain, keys)
-  rrlist = r->fetch_valid_domain_keys_time(domain, keys, checktime)
-  rrlist = r->validate_domain_ds(domain, keys)
-  rrlist = r->validate_domain_ds_time(domain, keys, checktime)
   rrlist = r->validate_domain_dnskey(domain, keys)
-  rrlist = r->validate_domain_dnskey_time(domain, keys, checktime)
   status = r->verify_trusted(rrset, rrsigs, validation_keys)
-  status = r->verify_trusted_time(rrset, rrsigs, checktime, validation_keys)
   bool = r->trusted_key(keys, trusted_keys)
   chain = r->build_data_chain(qflags, dataset, pkt, orig_rr)
 

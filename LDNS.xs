@@ -497,24 +497,6 @@ _verify_rrsig_keylist(rrset, rrsig, keys, good_keys)
 	RETVAL
 
 LDNS_Status
-_verify_rrsig_keylist_time(rrset, rrsig, keys, check_time, good_keys)
-	Net__LDNS__RRList rrset;
-	Net__LDNS__RR rrsig;
-	Net__LDNS__RRList keys;
-	time_t check_time;
-	Net__LDNS__RRList good_keys;
-	PREINIT:
-	    Net__LDNS__RRList gk;
-	CODE:
-	gk = ldns_rr_list_new();
-	RETVAL = ldns_verify_rrsig_keylist_time(
-	    rrset, rrsig, keys, check_time, good_keys);
-	add_cloned_rrs_to_list(good_keys, gk);
-	ldns_rr_list_free(gk);
-	OUTPUT:
-	RETVAL
-
-LDNS_Status
 _verify_rrsig_keylist_notime(rrset, rrsig, keys, good_keys)
 	Net__LDNS__RRList rrset;
 	Net__LDNS__RR rrsig;
@@ -539,15 +521,6 @@ ldns_verify_rrsig(rrset, rrsig, key)
 	_verify_rrsig = 1
 
 LDNS_Status
-ldns_verify_rrsig_time(rrset, rrsig, key, check_time)
-	Net__LDNS__RRList rrset;
-	Net__LDNS__RR rrsig;
-	Net__LDNS__RR key;
-	time_t check_time;
-	ALIAS:
-	_verify_rrsig_time = 1
-
-LDNS_Status
 _verify(rrset, rrsig, keys, good_keys)
 	Net__LDNS__RRList rrset;
 	Net__LDNS__RRList rrsig;
@@ -558,23 +531,6 @@ _verify(rrset, rrsig, keys, good_keys)
 	CODE:
 	gk = ldns_rr_list_new();
 	RETVAL = ldns_verify(rrset, rrsig, keys, gk);
-	add_cloned_rrs_to_list(good_keys, gk);
-	ldns_rr_list_free(gk);
-	OUTPUT:
-	RETVAL
-
-LDNS_Status
-_verify_time(rrset, rrsig, keys, check_time, good_keys)
-	Net__LDNS__RRList rrset;
-	Net__LDNS__RRList rrsig;
-	Net__LDNS__RRList keys;
-	time_t check_time;
-	Net__LDNS__RRList good_keys;
-	PREINIT:
-	    Net__LDNS__RRList gk;
-	CODE:
-	gk = ldns_rr_list_new();
-	RETVAL = ldns_verify_time(rrset, rrsig, keys, check_time, gk);
 	add_cloned_rrs_to_list(good_keys, gk);
 	ldns_rr_list_free(gk);
 	OUTPUT:
@@ -2213,38 +2169,12 @@ _rtt(resolver)
 	RETVAL
 
 Net__LDNS__RRList
-ldns_validate_domain_ds(resolver, domain, keys)
-	Net__LDNS__Resolver resolver;
-	Net__LDNS__RData domain;
-	Net__LDNS__RRList keys;
-	ALIAS:
-	validate_domain_ds = 1
-
-Net__LDNS__RRList
-ldns_validate_domain_ds_time(resolver, domain, keys, check_time)
-	Net__LDNS__Resolver resolver;
-	Net__LDNS__RData domain;
-	Net__LDNS__RRList keys;
-	time_t check_time;
-	ALIAS:
-	validate_domain_ds_time = 1
-
-Net__LDNS__RRList
 ldns_validate_domain_dnskey(resolver, domain, keys)
 	Net__LDNS__Resolver resolver;
 	Net__LDNS__RData domain;
 	Net__LDNS__RRList keys;
 	ALIAS:
 	validate_domain_dnskey = 1
-
-Net__LDNS__RRList
-ldns_validate_domain_dnskey_time(resolver, domain, keys, check_time)
-	Net__LDNS__Resolver resolver;
-	Net__LDNS__RData domain;
-	Net__LDNS__RRList keys;
-	time_t check_time;
-	ALIAS:
-	validate_domain_dnskey_time = 1
 
 LDNS_Status
 ldns_verify_trusted(resolver, rrset, rrsigs, validating_keys)
@@ -2254,16 +2184,6 @@ ldns_verify_trusted(resolver, rrset, rrsigs, validating_keys)
 	Net__LDNS__RRList validating_keys;
 	ALIAS:
 	_verify_trusted = 1
-
-LDNS_Status
-ldns_verify_trusted_time(resolver, rrset, rrsigs, check_time, validating_keys)
-	Net__LDNS__Resolver resolver;
-	Net__LDNS__RRList rrset;
-	Net__LDNS__RRList rrsigs;
-	time_t check_time;
-	Net__LDNS__RRList validating_keys;
-	ALIAS:
-	_verify_trusted_time = 1
 
 Net__LDNS__RRList
 _fetch_valid_domain_keys(resolver, domain, keys, s)
@@ -2278,29 +2198,6 @@ _fetch_valid_domain_keys(resolver, domain, keys, s)
 	CODE:
 	RETVAL = NULL;
 	trusted = ldns_fetch_valid_domain_keys(resolver, domain, keys, &s);
-	if (s == LDNS_STATUS_OK) {
-	    RETVAL = ldns_rr_list_clone(trusted);
-	    ldns_rr_list_free(trusted);
-	}
-	OUTPUT:
-	RETVAL
-	s
-
-Net__LDNS__RRList
-_fetch_valid_domain_keys_time(resolver, domain, keys, check_time, s)
-	Net__LDNS__Resolver resolver;
-	Net__LDNS__RData domain;
-	Net__LDNS__RRList keys;
-	time_t check_time;
-	LDNS_Status s;
-        PREINIT:
-            Net__LDNS__RRList trusted;
-	    Net__LDNS__RRList ret;
-	    size_t i;
-	CODE:
-	RETVAL = NULL;
-	trusted = ldns_fetch_valid_domain_keys_time(
-	    resolver, domain, keys, check_time, &s);
 	if (s == LDNS_STATUS_OK) {
 	    RETVAL = ldns_rr_list_clone(trusted);
 	    ldns_rr_list_free(trusted);
@@ -3102,14 +2999,6 @@ ldns_dnssec_derive_trust_tree(chain, rr)
 	Net__LDNS__RR rr;
 	ALIAS:
 	_derive_trust_tree = 1
-
-Net__LDNS__DNSSecTrustTree
-ldns_dnssec_derive_trust_tree_time(chain, rr, check_time)
-	Net__LDNS__DNSSecDataChain chain;
-	Net__LDNS__RR rr;
-	time_t check_time;
-	ALIAS:
-	_derive_trust_tree_time = 1
 
 Net__LDNS__RRList
 _rrset(chain)

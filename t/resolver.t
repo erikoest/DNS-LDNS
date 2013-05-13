@@ -16,6 +16,8 @@ my $p = $r->query(
 
 isa_ok($p, 'Net::LDNS::Packet', 'Make a simple query');
 
-$r->set_rtt(2, 3);
-my @rtt = $r->rtt;
+my $r2 = new Net::LDNS::Resolver(filename => "$Bin/testdata/resolv.conf");
+
+$r2->set_rtt(2, 3);
+my @rtt = $r2->rtt;
 is_deeply(\@rtt, [2, 3], "set_rtt and rtt");
