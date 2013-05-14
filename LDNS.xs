@@ -26,7 +26,9 @@
 typedef ldns_zone *          Net__LDNS__Zone;
 typedef ldns_rr_list *       Net__LDNS__RRList;
 typedef ldns_rr *            Net__LDNS__RR;
+typedef ldns_rr *            Net__LDNS__RR__Opt;
 typedef ldns_rdf *           Net__LDNS__RData;
+typedef ldns_rdf *           Net__LDNS__RData__Opt;
 typedef ldns_dnssec_zone *   Net__LDNS__DNSSecZone;
 typedef ldns_dnssec_rrsets * Net__LDNS__DNSSecRRSets;
 typedef ldns_dnssec_rrs *    Net__LDNS__DNSSecRRs;
@@ -266,7 +268,7 @@ ldns_zone_new()
 Net__LDNS__Zone
 _new_from_file(fp, origin, ttl, c, s, line_nr)
 	FILE*         fp;
-	Net__LDNS__RData   origin = NULL;
+	Net__LDNS__RData__Opt origin;
 	uint32_t      ttl = 0;
 	LDNS_RR_Class c = LDNS_RR_CLASS_IN;
 	LDNS_Status   s = 0;
@@ -619,7 +621,7 @@ Net__LDNS__RR
 _new_from_str(str, default_ttl, origin, s)
 	const char* str;
 	uint32_t default_ttl = 0;
-	Net__LDNS__RData origin = NULL;
+	Net__LDNS__RData__Opt origin;
 	LDNS_Status s;
 	PREINIT:
 	    Net__LDNS__RR rr = NULL;
@@ -635,7 +637,7 @@ _new_from_str(str, default_ttl, origin, s)
 Net__LDNS__RR
 _new_from_file(fp, origin, default_ttl, s, line_nr)
 	FILE*         fp;
-	Net__LDNS__RData   origin = NULL;
+	Net__LDNS__RData__Opt origin;
 	uint32_t      default_ttl = 0;
 	LDNS_Status   s = LDNS_STATUS_OK;
 	int           line_nr = 0;
@@ -1260,7 +1262,7 @@ ldns_dnssec_zone_new()
 Net__LDNS__DNSSecZone
 _new_from_file(fp, origin, ttl, c, s, line_nr)
 	FILE*         fp;
-	Net__LDNS__RData   origin = NULL;
+	Net__LDNS__RData__Opt origin;
 	uint32_t      ttl = 0;
 	LDNS_RR_Class c = LDNS_RR_CLASS_IN;
 	LDNS_Status   s = 0;
@@ -2232,7 +2234,7 @@ build_data_chain(res, qflags, data_set, pkt, orig_rr)
 	uint16_t qflags;
 	Net__LDNS__RRList data_set;
 	Net__LDNS__Packet pkt;
-	Net__LDNS__RR orig_rr;
+	Net__LDNS__RR__Opt orig_rr;
 	CODE:
 	RETVAL = ldns_dnssec_build_data_chain(res, qflags, data_set, pkt, orig_rr);
 	OUTPUT:
