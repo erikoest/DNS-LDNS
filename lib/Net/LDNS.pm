@@ -706,6 +706,15 @@ require Net::LDNS::KeyList;
 require Net::LDNS::DNSSecDataChain;
 require Net::LDNS::DNSSecTrustTree;
 
+# Some default values used by the constructors
+our $DEFAULT_CLASS = &LDNS_RR_CLASS_IN;
+our $DEFAULT_TTL = 86400;         # 1d
+our $DEFAULT_ORIGIN = new Net::LDNS::RData(&LDNS_RDF_TYPE_DNAME, '.');
+our $DEFAULT_SOA_REFRESH = 86400; # 1d
+our $DEFAULT_SOA_RETRY = 3600;    # 1h
+our $DEFAULT_SOA_EXPIRE = 604800; # 1w
+our $DEFAULT_SOA_MINIMUM = 10800; # 3h
+
 # Autoload methods go after =cut, and are processed by the autosplit program.
 
 1;

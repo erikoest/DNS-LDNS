@@ -49,17 +49,14 @@ sub new {
 sub set_pubkey_owner {
     my ($self, $owner) = @_;
     my $oldowner = $self->pubkey_owner;
-    Net::LDNS::GC::disown($oldowner) if (defined $oldowner);
+    Net::LDNS::GC::disown(my $old = $self->pubkey_owner);
     $self->_set_pubkey_owner($owner);
-    Net::LDNS::GC::own($owner, $self);
-    return $owner;
+    return Net::LDNS::GC::own($owner, $self);
 }
 
 sub pubkey_owner {
     my $self = shift;
-    my $owner = _pubkey_owner($self);
-    Net::LDNS::GC::own($owner, $self) if (defined $owner);
-    return $owner;
+    return Net::LDNS::GC::own($self->_pubkey_owner, $self);
 }
 
 sub DESTROY {

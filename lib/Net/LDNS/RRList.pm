@@ -34,9 +34,7 @@ sub new {
 
 sub rr {
     my ($self, $index) = @_;
-    my $rr = _rr($self, $index);
-    Net::LDNS::GC::own($rr, $self) if (defined $rr);
-    return $rr;
+    return Net::LDNS::GC::own($self->_rr($index), $self);
 }
 
 sub push {
@@ -90,18 +88,13 @@ sub verify_rrsig_keylist_notime {
 
 sub get_dnskey_for_rrsig {
     my ($self, $rrsig) = @_;
-
-    my $key = _get_dnskey_for_rrsig($rrsig, $self);
-    Net::LDNS::GC::own($key, $self) if (defined $key);
-    return $key;
+    return Net::LDNS::GC::own(_get_dnskey_for_rrsig($rrsig, $self), $self);
 }
 
 sub get_rrsig_for_name_and_type {
     my ($self, $name, $type) = @_;
-
-    my $rrsig = _get_dnskey_for_name_and_type($name, $type, $self);
-    Net::LDNS::GC::own($rrsig, $self) if (defined $rrsig);
-    return $rrsig;
+    return Net::LDNS::GC::own(
+	_get_dnskey_for_name_and_type($name, $type, $self), $self);
 }
 
 sub DESTROY {

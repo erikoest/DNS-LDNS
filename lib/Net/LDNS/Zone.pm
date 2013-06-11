@@ -14,7 +14,7 @@ XSLoader::load('Net::LDNS', $VERSION);
 sub new {
     my ($class, %args) = @_;
 
-    my $line_nr;
+    my $line_nr = 0;
     my $status = &LDNS_STATUS_OK;
     my $zone;
     my $file;
@@ -30,7 +30,10 @@ sub new {
     }
 
     if ($file) {
-	$zone = _new_from_file($file, $args{origin}, $args{ttl}, $args{class}, 
+	$zone = _new_from_file($file, 
+			       $args{origin} || $Net::LDNS::DEFAULT_ORIGIN, 
+			       $args{default_ttl} || $Net::LDNS::DEFAULT_TTL, 
+			       $args{class} || $Net::LDNS::DEFAULT_CLASS, 
 			       $status, $line_nr);
     }
     else {
@@ -58,33 +61,26 @@ sub to_string {
 
 sub soa {
     my $self = shift;
-    my $soa = _soa($self);
-    Net::LDNS::GC::own($soa, $self) if (defined $soa);
-    return $soa;
+    return Net::LDNS::GC::own($self->_soa, $self);
 }
 
 sub set_soa {
     my ($self, $soa) = @_;
-    my $oldsoa = $self->soa;
-    Net::LDNS::GC::disown($oldsoa) if (defined $oldsoa);
-    # Set a copy of the soa in case it is already owned
-    _set_soa($self, my $copy = $soa->clone);
-    Net::LDNS::GC::own($copy, $self);
+    Net::LDNS::GC::disown(my $old = $self->soa);
+    $self->_set_soa(my $copy = $soa->clone);
+    return Net::LDNS::GC::own($copy, $self);
 }
 
 sub rrs {
     my $self = shift;
-    my $list = _rrs($self);
-    Net::LDNS::GC::own($list, $self) if (defined $list);
-    return $list;
+    return Net::LDNS::GC::own($self->_rrs, $self);
 }
 
 sub set_rrs {
     my ($self, $list) = @_;
-    my $oldlist = $self->rrs;
-    Net::LDNS::GC::disown($oldlist) if (defined $oldlist);
-    _set_rrs($self, my $copy = $list->clone);
-    Net::LDNS::GC::own($copy, $self);
+    Net::LDNS::GC::disown(my $old = $self->rrs);
+    $self->_set_rrs(my $copy = $list->clone);
+    return Net::LDNS::GC::own($copy, $self);
 }
 
 sub DESTROY {
@@ -105,12 +101,12 @@ Net::LDNS - Perl extension for the ldns library
   my z = new Net::LDNS::Zone(
     filename => '/path/to/myzone',
     origin => new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'myzone'), #optional
-    ttl => 3600, #optional
-    class => LDNS_RR_CLASS_, #optional
+    default_ttl => 3600, #optional
+    class => LDNS_RR_CLASS_IN, #optional
   )
   my z = new Net::LDNS::Zone(
     file => \*FILE,
-    origin => ..., ttl => ..., class => ...
+    origin => ..., default_ttl => ..., class => ...
   )
   my z = new Net::LDNS::Zone
 

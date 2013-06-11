@@ -37,7 +37,7 @@ is($z->rrs->rr(3)->to_string, "ns3.myzone.org.\t3600\tIN\tA\t192.168.100.2\n",
 
 # Read a zone from file
 my $z2 = new Net::LDNS::Zone(
-    filename => "$Bin/testdata/myzone.org");
+    filename => "$Bin/testdata/myzone.org", ttl => 100);
 
 $z2->canonicalize;
 

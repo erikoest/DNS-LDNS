@@ -18,23 +18,20 @@ sub new {
 
 sub name {
     my $self = shift;
-    my $name = _name($self);
-    Net::LDNS::GC::own($name, $self) if (defined $name);
-    return $name;    
+    return Net::LDNS::GC::own($self->_name, $self);
 }
 
 sub set_name {
     my ($self, $name) = @_;
 
+    Net::LDNS::GC::disown(my $old = $self->name);
     _set_name($self, my $copy = $name->clone);
     Net::LDNS::GC::own($copy, $self);
 }
 
 sub rrsets {
     my $self = shift;
-    my $rrsets = _rrsets($self);
-    Net::LDNS::GC::own($rrsets, $self) if (defined $rrsets);
-    return $rrsets;
+    return Net::LDNS::GC::own($self->_rrsets, $self);
 }
 
 sub add_rr {
@@ -48,30 +45,25 @@ sub add_rr {
 
 sub nsec {
     my $self = shift;
-    my $nsec = _nsec($self);
-    Net::LDNS::GC::own($nsec, $self) if (defined $nsec);
-    return $nsec;
+    return Net::LDNS::GC::own($self->_nsec, $self);
 }
 
 sub set_nsec {
     my ($self, $nsec) = @_;
 
+    Net::LDNS::GC::disown(my $old = $self->nsec);
     _set_nsec($self, my $copy = $nsec->clone);
     Net::LDNS::GC::own($copy, $self);
 }
 
 sub hashed_name {
     my $self = shift;
-    my $hname = _hashed_name($self);
-    Net::LDNS::GC::own($hname, $self) if (defined $hname);
-    return $hname;
+    return Net::LDNS::GC::own($self->_hashed_name, $self);
 }
 
 sub nsec_signatures {
     my $self = shift;
-    my $sigs = _nsec_signatures($self);
-    Net::LDNS::GC::own($sigs, $self) if (defined $sigs);
-    return $sigs;
+    return Net::LDNS::GC::own($self->_nsec_signatures, $self);
 }
 
 sub DESTROY {

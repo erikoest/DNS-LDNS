@@ -33,7 +33,10 @@ sub new {
     }
 
     if ($file) {
-	$zone = _new_from_file($file, $args{origin}, $args{ttl}, $args{class}, 
+	$zone = _new_from_file($file, 
+			       $args{origin} || $LDNS::DEFAULT_ORIGIN, 
+			       $args{ttl} || $LDNS::DEFAULT_TTL, 
+			       $args{class} || $LDNS::DEFAULT_CLASS, 
 			       $status, $line_nr);
     }
     else {
@@ -55,23 +58,17 @@ sub new {
 
 sub soa {
     my $self = shift;
-    my $soa = _soa($self);
-    Net::LDNS::GC::own($soa, $self) if (defined $soa);
-    return $soa;
+    return Net::LDNS::GC::own($self->_soa, $self);
 }
 
 sub names {
     my $self = shift;
-    my $names = _names($self);
-    Net::LDNS::GC::own($names, $self) if (defined $names);
-    return $names;
+    return Net::LDNS::GC::own($self->_names, $self);
 }
 
 sub find_rrset {
     my ($self, $name, $type) = @_;
-    my $rrset = _find_rrset($self, $name, $type);
-    Net::LDNS::GC::own($rrset, $self) if (defined $rrset);
-    return $rrset;
+    return Net::LDNS::GC::own($self->_find_rrset($name, $type), $self);
 }
 
 sub add_rr {

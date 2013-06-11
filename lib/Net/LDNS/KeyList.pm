@@ -31,10 +31,7 @@ sub push {
 
 sub key {
     my ($self, $index) = @_;
-
-    my $key = _key($self, $index);
-    Net::LDNS::GC::own($key, $self) if (defined $key);
-    return $key;
+    return Net::LDNS::GC::own($self->_key($index), $self);
 }
 
 sub DESTROY {

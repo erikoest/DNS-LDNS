@@ -52,10 +52,7 @@ sub new {
 
 sub dnssec_anchors {
     my $self = shift;
-
-    my $list = _dnssec_anchors($self);
-    Net::LDNS::GC::own($list, $self) if (defined $list);
-    return $list;
+    return Net::LDNS::GC::own($self->_dnssec_anchors, $self);
 }
 
 sub push_dnssec_anchor {
@@ -67,8 +64,7 @@ sub push_dnssec_anchor {
 
 sub set_dnssec_anchors {
     my ($self, $l) = @_;
-    my $old = $self->dnssec_anchors;
-    Net::LDNS::GC::disown($old) if (defined $old);
+    Net::LDNS::GC::disown(my $old = $self->dnssec_anchors);
     $self->_set_dnssec_anchors($l);
     Net::LDNS::GC::own($l, $self);
     return $l;
@@ -76,15 +72,12 @@ sub set_dnssec_anchors {
 
 sub domain {
     my $self = shift;
-
-    my $dom = _domain($self);
-    Net::LDNS::GC::own($dom, $self) if (defined $dom);
-    return $dom;
+    return Net::LDNS::GC::own($self->_domain, $self);
 }
 
 sub set_domain {
     my ($self, $dom) = @_;
-
+    Net::LDNS::GC::disown(my $old = $self->domain);
     _set_domain($self, my $copy = $dom->clone);
     Net::LDNS::GC::own($copy, $self);
 }
@@ -109,10 +102,7 @@ sub push_nameserver {
 
 sub pop_nameserver {
     my $self = shift;
-
-    my $n = _pop_nameserver($self);
-    Net::LDNS::GC::own($n) if (defined $n);
-    return $n;
+    return Net::LDNS::GC::own($self->_pop_nameserver);
 }
 
 sub push_searchlist {
@@ -159,8 +149,7 @@ sub fetch_valid_domain_keys {
 	return;
     }
 
-    Net::LDNS::GC::own($trusted, $self);
-    return $trusted;
+    return Net::LDNS::GC::own($trusted, $self);
 }
 
 sub prepare_query_pkt {

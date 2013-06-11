@@ -15,23 +15,17 @@ XSLoader::load('Net::LDNS', $VERSION);
 
 sub rrs {
     my $self = shift;
-    my $rrs = _rrs($self);
-    Net::LDNS::GC::own($rrs, Net::LDNS::GC::owner($self)) if (defined $rrs);
-    return $rrs;
+    return Net::LDNS::GC::own($self->_rrs, Net::LDNS::GC::owner($self));
 }
 
 sub signatures {
     my $self = shift;
-    my $sigs = _signatures($self);
-    Net::LDNS::GC::own($sigs, Net::LDNS::GC::owner($self)) if (defined $sigs);
-    return $sigs;
+    return Net::LDNS::GC::own($self->_signatures, Net::LDNS::GC::owner($self));
 }
 
 sub next {
     my $self = shift;
-    my $rrsets = _next($self);
-    Net::LDNS::GC::own($rrsets, Net::LDNS::GC::owner($self)) if (defined $rrsets);
-    return $rrsets;
+    return Net::LDNS::GC::own($self->_next, Net::LDNS::GC::owner($self));
 }
 
 sub set_type {

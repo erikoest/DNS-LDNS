@@ -269,13 +269,14 @@ Net__LDNS__Zone
 _new_from_file(fp, origin, ttl, c, s, line_nr)
 	FILE*         fp;
 	Net__LDNS__RData__Opt origin;
-	uint32_t      ttl = 0;
-	LDNS_RR_Class c = LDNS_RR_CLASS_IN;
-	LDNS_Status   s = 0;
-	int           line_nr = 0;
+	uint32_t      ttl;
+	LDNS_RR_Class c;
+	LDNS_Status   s;
+	int           line_nr;
         PREINIT:
             ldns_zone *z;
         CODE:
+        if (ttl == 0) { ttl = 0; }
 	RETVAL = NULL;
 	s = ldns_zone_new_frm_fp_l(&z, fp, origin, ttl, c, &line_nr);
 
@@ -620,7 +621,7 @@ ldns_rr_new_frm_type(t)
 Net__LDNS__RR
 _new_from_str(str, default_ttl, origin, s)
 	const char* str;
-	uint32_t default_ttl = 0;
+	uint32_t default_ttl;
 	Net__LDNS__RData__Opt origin;
 	LDNS_Status s;
 	PREINIT:
@@ -638,9 +639,9 @@ Net__LDNS__RR
 _new_from_file(fp, origin, default_ttl, s, line_nr)
 	FILE*         fp;
 	Net__LDNS__RData__Opt origin;
-	uint32_t      default_ttl = 0;
-	LDNS_Status   s = LDNS_STATUS_OK;
-	int           line_nr = 0;
+	uint32_t      default_ttl;
+	LDNS_Status   s;
+	int           line_nr;
         PREINIT:
             ldns_rr *rr;
 	    ldns_rdf *oclone = NULL;
@@ -1263,10 +1264,10 @@ Net__LDNS__DNSSecZone
 _new_from_file(fp, origin, ttl, c, s, line_nr)
 	FILE*         fp;
 	Net__LDNS__RData__Opt origin;
-	uint32_t      ttl = 0;
-	LDNS_RR_Class c = LDNS_RR_CLASS_IN;
-	LDNS_Status   s = 0;
-	int           line_nr = 0;
+	uint32_t      ttl;
+	LDNS_RR_Class c;
+	LDNS_Status   s;
+	int           line_nr;
         PREINIT:
             ldns_dnssec_zone *z;
         CODE:
@@ -2763,8 +2764,8 @@ MODULE = Net::LDNS		PACKAGE = Net::LDNS::Key
 Net__LDNS__Key
 _new_from_file(fp, line_nr, s)
 	FILE*         fp;
-	int           line_nr = 0;
-	LDNS_Status   s = LDNS_STATUS_OK;
+	int           line_nr;
+	LDNS_Status   s;
         PREINIT:
             ldns_key *key;
         CODE:

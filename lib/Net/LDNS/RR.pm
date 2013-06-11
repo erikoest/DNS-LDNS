@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use Net::LDNS ':all';
+use Carp 'croak';
 
 our $VERSION = '0.02';
 
@@ -12,58 +13,68 @@ require XSLoader;
 XSLoader::load('Net::LDNS', $VERSION);
 
 sub new {
-    my ($class, %args) = @_;
+    my $class = shift;
 
     my $rr;
     my $status = &LDNS_STATUS_OK;
 
-    if ($args{str}) {
-	$rr = _new_from_str($args{str}, $args{default_ttl}, 
-			    $args{origin}, $status);
+    if (scalar(@_) == 0) {
+	$rr = _new;
     }
-    elsif ($args{filename} or $args{file}) {
-	my $line_nr = 0;
-	my $file = $args{file};
-	if ($args{filename}) {
-	    unless (open FILE, $args{filename}) {
-		$Net::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
-		$Net::LDNS::line_nr = 0;
-		return;
-	    }
-	    $file = \*FILE;
-	}
-
-	$rr = _new_from_file($file, $args{default_ttl}, $args{origin}, 
-			     $status, $line_nr);
-	if ($args{filename}) {
-	    close $file;
-	}
-
-	$Net::LDNS::last_status = $status;
-	$Net::LDNS::line_nr = $line_nr;
-	if (!defined $rr) {
-	    return;
-	}
-    }
-    elsif ($args{type}) {
-	$rr = _new_from_type($args{type});
-	if ($args{owner}) {
-	    $rr->set_owner($args{owner});
-	}
-	if ($args{ttl}) {
-	    $rr->set_ttl($args{ttl});
-	}
-	if ($args{class}) {
-	    $rr->set_class($args{class});
-	}
-	if ($args{rdata}) {
-	    if (!$rr->set_rdata(@{$args{rdata}})) {
-		return;
-	    }
-	}
+    elsif (scalar(@_) == 1) {
+	$rr = _new_from_str($_[0], $Net::LDNS::DEFAULT_TTL, 
+	    $Net::LDNS::DEFAULT_ORIGIN, $status);
     }
     else {
-	$rr = _new();
+	my %args = @_;
+
+	if ($args{str}) {
+	    $rr = _new_from_str($args{str}, 
+				$args{default_ttl} || $Net::LDNS::DEFAULT_TTL, 
+				$args{origin} || $Net::LDNS::DEFAULT_ORIGIN, 
+				$status);
+	}
+	elsif ($args{filename} or $args{file}) {
+	    my $line_nr = 0;
+	    my $file = $args{file};
+	    if ($args{filename}) {
+		unless (open FILE, $args{filename}) {
+		    $Net::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
+		    $Net::LDNS::line_nr = 0;
+		    return;
+		}
+		$file = \*FILE;
+	    }
+
+	    $rr = _new_from_file($file, 
+				 $args{default_ttl} || $Net::LDNS::DEFAULT_TTL, 
+				 $args{origin} || $Net::LDNS::DEFAULT_ORIGIN, 
+				 $status, $line_nr);
+	    if ($args{filename}) {
+		close $file;
+	    }
+
+	    $Net::LDNS::line_nr = $line_nr;
+	}
+	elsif ($args{type}) {
+	    $rr = _new_from_type($args{type});
+	    if ($args{owner}) {
+		$rr->set_owner(new Net::LDNS::RData(
+		    &LDNS_RDF_TYPE_DNAME, $args{owner}));
+	    }
+	    $rr->set_ttl($args{ttl} || $Net::LDNS::DEFAULT_TTL);
+	    $rr->set_class($args{class} || $Net::LDNS::DEFAULT_CLASS);
+
+	    if ($args{rdata}) {
+		if (!$rr->set_rdata(@{$args{rdata}})) {
+		    $Net::LDNS::last_status = &LDNS_STATUS_SYNTAX_RDATA_ERR;
+		    return;
+		}
+	    }
+	    else {
+		$rr->_set_rdata_by_type(%args);
+	    }
+	}
     }
 
     if (!defined $rr) {
@@ -73,20 +84,114 @@ sub new {
     return $rr;
 }
 
+sub _set_rdata_by_type {
+    my ($rr, %args) = @_;
+
+    my %args_by_rr_type = (
+	&LDNS_RR_TYPE_A => [
+	     { name => 'address', type => &LDNS_RDF_TYPE_A } ],
+	&LDNS_RR_TYPE_AAAA => [
+	     { name => 'address', type => &LDNS_RDF_TYPE_AAAA } ],
+	&LDNS_RR_TYPE_CNAME => [
+	     { name => 'cname', type => &LDNS_RDF_TYPE_DNAME } ],
+	&LDNS_RR_TYPE_DNSKEY => [ 
+	     { name => 'flags', type => &LDNS_RDF_TYPE_INT16 }, 
+	     { name => 'protocol', type => &LDNS_RDF_TYPE_INT8 }, 
+	     { name => 'algorithm', type => &LDNS_RDF_TYPE_ALG }, 
+	     { name => 'key', type => &LDNS_RDF_TYPE_B64 } ],
+	&LDNS_RR_TYPE_DS => [
+	     { name => 'keytag', type => &LDNS_RDF_TYPE_INT16 }, 
+	     { name => 'algorithm', type => &LDNS_RDF_TYPE_ALG }, 
+	     { name => 'digtype', type => &LDNS_RDF_TYPE_INT8 }, 
+	     { name => 'digest', type => &LDNS_RDF_TYPE_HEX } ],
+	&LDNS_RR_TYPE_MX => [ 
+	     { name => 'preference', type => &LDNS_RDF_TYPE_INT16 }, 
+	     { name => 'exchange', type => &LDNS_RDF_TYPE_DNAME } ],
+	&LDNS_RR_TYPE_NAPTR => [
+	     { name => 'order', type => &LDNS_RDF_TYPE_INT16 },
+	     { name => 'preference', type => &LDNS_RDF_TYPE_INT16 },
+	     { name => 'flags', type => &LDNS_RDF_TYPE_STR },
+	     { name => 'service', type => &LDNS_RDF_TYPE_STR },
+	     { name => 'regexp', type => &LDNS_RDF_TYPE_STR },
+	     { name => 'replacement', type => &LDNS_RDF_TYPE_DNAME } ],
+	&LDNS_RR_TYPE_NS => [ 
+	     { name => 'nsdname', type => &LDNS_RDF_TYPE_DNAME } ],
+	&LDNS_RR_TYPE_NSEC => [ 
+	     { name => 'nxtdname', type => &LDNS_RDF_TYPE_DNAME }, 
+	     { name => 'typelist', type => &LDNS_RDF_TYPE_NSEC } ],
+	&LDNS_RR_TYPE_NSEC3 => [ 
+	     { name => 'hashalgo', type => &LDNS_RDF_TYPE_INT8 }, 
+	     { name => 'flags', type => &LDNS_RDF_TYPE_INT8 }, 
+	     { name => 'iterations', type => &LDNS_RDF_TYPE_INT16 }, 
+	     { name => 'salt', type => &LDNS_RDF_TYPE_NSEC3_SALT }, 
+	     { name => 'hnxtname', type => &LDNS_RDF_TYPE_NSEC3_NEXT_OWNER }, 
+	     { name => 'typelist', type => &LDNS_RDF_TYPE_NSEC } ],
+	&LDNS_RR_TYPE_NSEC3PARAM => [
+	     { name => 'hashalgo', type => &LDNS_RDF_TYPE_INT8 }, 
+	     { name => 'flags', type => &LDNS_RDF_TYPE_INT8 }, 
+	     { name => 'iterations', type => &LDNS_RDF_TYPE_INT16 }, 
+	     { name => 'salt', type => &LDNS_RDF_TYPE_NSEC3_SALT } ],
+	&LDNS_RR_TYPE_RRSIG => [
+	     { name => 'coveredtype', type =>&LDNS_RDF_TYPE_TYPE  }, 
+	     { name => 'algorithm', type => &LDNS_RDF_TYPE_ALG }, 
+	     { name => 'labels', type => &LDNS_RDF_TYPE_INT8 }, 
+	     { name => 'orgttl', type => &LDNS_RDF_TYPE_INT32 }, 
+	     { name => 'sigexpiration', type => &LDNS_RDF_TYPE_TIME }, 
+	     { name => 'siginception', type => &LDNS_RDF_TYPE_TIME },
+	     { name => 'keytag', type => &LDNS_RDF_TYPE_INT16 }, 
+	     { name => 'signame', type => &LDNS_RDF_TYPE_DNAME }, 
+	     { name => 'sig', type => &LDNS_RDF_TYPE_B64 } ],
+	&LDNS_RR_TYPE_SOA => [
+	     { name => 'mname', type => &LDNS_RDF_TYPE_DNAME }, 
+	     { name => 'rname', type => &LDNS_RDF_TYPE_DNAME }, 
+	     { name => 'serial', type => &LDNS_RDF_TYPE_INT32 }, 
+	     { name => 'refresh', type => &LDNS_RDF_TYPE_PERIOD,
+	       default => $Net::LDNS::DEFAULT_SOA_REFRESH }, 
+	     { name => 'retry', type => &LDNS_RDF_TYPE_PERIOD,
+	       default => $Net::LDNS::DEFAULT_SOA_RETRY },
+	     { name => 'expire', type => &LDNS_RDF_TYPE_PERIOD,
+	       default => $Net::LDNS::DEFAULT_SOA_EXPIRE },
+	     { name => 'minimum', type => &LDNS_RDF_TYPE_PERIOD, 
+	       default => $Net::LDNS::DEFAULT_SOA_MINIMUM } ],
+	&LDNS_RR_TYPE_SRV => [ 
+	     { name => 'priority', type => &LDNS_RDF_TYPE_INT16 }, 
+	     { name => 'weight', type => &LDNS_RDF_TYPE_INT16 }, 
+	     { name => 'port', type => &LDNS_RDF_TYPE_INT16 }, 
+	     { name => 'target', type => &LDNS_RDF_TYPE_DNAME } ],
+	&LDNS_RR_TYPE_TXT => [ 
+	     { name => 'txtdata', type => &LDNS_RDF_TYPE_STR } ],
+    );
+
+    if (!exists $args_by_rr_type{$args{type}}) {
+	croak "Missing parameter 'rdata'";
+    }
+
+    my @rdata;
+    for my $p (@{$args_by_rr_type{$args{type}}}) {
+	my $val = $args{$p->{name}};
+	if (!defined $val and exists $p->{default}) {
+	    $val = $p->{default};
+	}
+	if (!defined $val) {
+	    croak "Missing parameter '".$p->{name}."'";
+	}
+	my $r = new Net::LDNS::RData($p->{type}, $val)
+	    or croak "Bad parameter '".$p->{name}."'";
+	push @rdata, $r;
+    }
+    $rr->set_rdata(@rdata);
+}
+
 sub owner {
     my $self = shift;
-    my $owner = _owner($self);
-    Net::LDNS::GC::own($owner, $self) if (defined $owner);
-    return $owner;
+    return Net::LDNS::GC::own($self->_owner, $self);
 }
 
 sub set_owner {
     my ($self, $owner) = @_;
-    my $oldowner = $self->owner;
-    Net::LDNS::GC::disown($oldowner) if (defined $oldowner);
+    Net::LDNS::GC::disown(my $old = $self->owner);
     $self->_set_owner($owner);
-    Net::LDNS::GC::own($owner, $self);
-    return $owner;
+    return Net::LDNS::GC::own($owner, $self);
 }
 
 sub dname {
@@ -95,10 +200,7 @@ sub dname {
 
 sub rdata {
     my ($self, $index) = @_;
-
-    my $rdata = _rdata($self, $index);
-    Net::LDNS::GC::own($rdata, $self) if (defined $rdata);
-    return $rdata;
+    return Net::LDNS::GC::own($self->_rdata($index), $self);
 }
 
 # replace all existing rdata with new ones. Requires the
@@ -114,7 +216,7 @@ sub set_rdata {
     my $i = 0;
     for (@rdata) {
 	my $oldrd = _set_rdata($self, my $copy = $_->clone, $i);
-	Net::LDNS::GC::disown($oldrd) if (defined $oldrd);
+	Net::LDNS::GC::disown(my $old = $oldrd);
 	Net::LDNS::GC::own($copy, $self);
 	$i++;
     }
@@ -134,13 +236,12 @@ sub push_rdata {
 
 sub rrsig_typecovered {
     my $self = shift;
-    my $type = _rrsig_typecovered($self);
-    Net::LDNS::GC::own($type, $self) if (defined $type);
-    return $type;
+    return Net::LDNS::GC::own($self->_rrsig_typecovered, $self);
 }
 
 sub rrsig_set_typecovered {
     my ($self, $type) = shift;
+    Net::LDNS::GC::disown(my $old = $self->rrsig_typecovered);
     my $result = $self->_rrsig_set_typecovered(my $copy = $type->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -148,13 +249,12 @@ sub rrsig_set_typecovered {
 
 sub rrsig_algorithm {
     my $self = shift;
-    my $algo = _rrsig_algorithm($self);
-    Net::LDNS::GC::own($algo, $self) if (defined $algo);
-    return $algo;
+    return Net::LDNS::GC::own($self->_rrsig_algorithm, $self);
 }
 
 sub rrsig_set_algorithm {
     my ($self, $algo) = shift;
+    Net::LDNS::GC::disown(my $old = $self->rrsig_algorithm);
     my $result = $self->_rrsig_set_algorithm(my $copy = $algo->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -162,13 +262,12 @@ sub rrsig_set_algorithm {
 
 sub rrsig_expiration {
     my $self = shift;
-    my $date = _rrsig_expiration($self);
-    Net::LDNS::GC::own($date, $self) if (defined $date);
-    return $date;
+    return Net::LDNS::GC::own($self->_rrsig_expiration, $self);
 }
 
 sub rrsig_set_expiration {
     my ($self, $date) = shift;
+    Net::LDNS::GC::disown(my $old = $self->rrsig_expiration);
     my $result = $self->_rrsig_set_expiration(my $copy = $date->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -176,13 +275,12 @@ sub rrsig_set_expiration {
 
 sub rrsig_inception {
     my $self = shift;
-    my $date = _rrsig_inception($self);
-    Net::LDNS::GC::own($date, $self) if (defined $date);
-    return $date;
+    return Net::LDNS::GC::own($self->_rrsig_inception, $self);
 }
 
 sub rrsig_set_inception {
     my ($self, $date) = shift;
+    Net::LDNS::GC::disown(my $old = $self->rrsig_inception);
     my $result = $self->_rrsig_set_inception(my $copy = $date->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -190,13 +288,12 @@ sub rrsig_set_inception {
 
 sub rrsig_keytag {
     my $self = shift;
-    my $tag = _rrsig_keytag($self);
-    Net::LDNS::GC::own($tag, $self) if (defined $tag);
-    return $tag;
+    return Net::LDNS::GC::own($self->_rrsig_keytag, $self);
 }
 
 sub rrsig_set_keytag {
     my ($self, $tag) = shift;
+    Net::LDNS::GC::disown(my $old = $self->rrsig_keytag);
     my $result = $self->_rrsig_set_keytag(my $copy = $tag->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -204,13 +301,12 @@ sub rrsig_set_keytag {
 
 sub rrsig_sig {
     my $self = shift;
-    my $sig = _rrsig_sig($self);
-    Net::LDNS::GC::own($sig, $self) if (defined $sig);
-    return $sig;
+    return Net::LDNS::GC::own($self->_rrsig_sig, $self);
 }
 
 sub rrsig_set_sig {
     my ($self, $sig) = shift;
+    Net::LDNS::GC::disown(my $old = $self->rrsig_sig);
     my $result = $self->_rrsig_set_sig(my $copy = $sig->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -218,13 +314,12 @@ sub rrsig_set_sig {
 
 sub rrsig_labels {
     my $self = shift;
-    my $lab = _rrsig_labels($self);
-    Net::LDNS::GC::own($lab, $self) if (defined $lab);
-    return $lab;
+    return Net::LDNS::GC::own($self->_rrsig_labels, $self);
 }
 
 sub rrsig_set_labels {
     my ($self, $lab) = shift;
+    Net::LDNS::GC::disown(my $old = $self->rrsig_labels);
     my $result = $self->_rrsig_set_labels(my $copy = $lab->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -232,27 +327,25 @@ sub rrsig_set_labels {
 
 sub rrsig_origttl {
     my $self = shift;
-    my $ttl = _rrsig_origttl($self);
-    Net::LDNS::GC::own($ttl, $self) if (defined $ttl);
-    return $ttl;
+    return Net::LDNS::GC::own($self->_rrsig_origttl, $self);
 }
 
 sub rrsig_set_origttl {
-    my ($self, $lab) = shift;
-    my $result = $self->_rrsig_set_origttl(my $copy = $lab->clone);
+    my ($self, $ttl) = shift;
+    Net::LDNS::GC::disown(my $old = $self->rrsig_origttl);
+    my $result = $self->_rrsig_set_origttl(my $copy = $ttl->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
 }
 
 sub rrsig_signame {
     my $self = shift;
-    my $name = _rrsig_signame($self);
-    Net::LDNS::GC::own($name, $self) if (defined $name);
-    return $name;
+    return Net::LDNS::GC::own($self->_rrsig_signame, $self);
 }
 
 sub rrsig_set_signame {
     my ($self, $name) = shift;
+    Net::LDNS::GC::disown(my $old = $self->rrsig_signame);
     my $result = $self->_rrsig_set_signame(my $copy = $name->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -260,13 +353,12 @@ sub rrsig_set_signame {
 
 sub dnskey_algorithm {
     my $self = shift;
-    my $algo = _dnskey_algorithm($self);
-    Net::LDNS::GC::own($algo, $self) if (defined $algo);
-    return $algo;
+    return Net::LDNS::GC::own($self->_dnskey_algorithm, $self);
 }
 
 sub dnskey_set_algorithm {
     my ($self, $algo) = shift;
+    Net::LDNS::GC::disown(my $old = $self->dnskey_algorithm);
     my $result = $self->_dnskey_set_algorithm(my $copy = $algo->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -274,13 +366,12 @@ sub dnskey_set_algorithm {
 
 sub dnskey_flags {
     my $self = shift;
-    my $flags = _dnskey_flags($self);
-    Net::LDNS::GC::own($flags, $self) if (defined $flags);
-    return $flags;
+    return Net::LDNS::GC::own($self->_dnskey_flags, $self);
 }
 
 sub dnskey_set_flags {
     my ($self, $flags) = shift;
+    Net::LDNS::GC::disown(my $old = $self->flags);
     my $result = $self->_dnskey_set_flags(my $copy = $flags->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -288,13 +379,12 @@ sub dnskey_set_flags {
 
 sub dnskey_protocol {
     my $self = shift;
-    my $proto = _dnskey_protocol($self);
-    Net::LDNS::GC::own($proto, $self) if (defined $proto);
-    return $proto;
+    return Net::LDNS::GC::own($self->_dnskey_protocol, $self);
 }
 
 sub dnskey_set_protocol {
     my ($self, $proto) = shift;
+    Net::LDNS::GC::disown(my $old = $self->dnskey_protocol);
     my $result = $self->_dnskey_set_protocol(my $copy = $proto->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -302,13 +392,12 @@ sub dnskey_set_protocol {
 
 sub dnskey_key {
     my $self = shift;
-    my $key = _dnskey_key($self);
-    Net::LDNS::GC::own($key, $self) if (defined $key);
-    return $key;
+    return Net::LDNS::GC::own($self->_dnskey_key, $self);
 }
 
 sub dnskey_set_key {
     my ($self, $key) = shift;
+    Net::LDNS::GC::disown(my $old = $self->dnskey_key);
     my $result = $self->_dnskey_set_key(my $copy = $key->clone);
     Net::LDNS::GC::own($copy, $self);
     return $result;
@@ -316,30 +405,23 @@ sub dnskey_set_key {
 
 sub nsec3_next_owner {
     my $self = shift;
-    my $owner = _nsec3_next_owner($self);
-    Net::LDNS::GC::own($owner, $self) if (defined $owner);
-    return $owner;
+    return Net::LDNS::GC::own($self->_nsec3_next_owner, $self);
 }
 
 sub nsec3_bitmap {
     my $self = shift;
-    my $owner = _nsec3_bitmap($self);
-    Net::LDNS::GC::own($owner, $self) if (defined $owner);
-    return $owner;
+    return Net::LDNS::GC::own($self->_nsec3_bitmap, $self);
 }
 
 sub nsec3_salt {
     my $self = shift;
-    my $owner = _nsec3_salt($self);
-    Net::LDNS::GC::own($owner, $self) if (defined $owner);
-    return $owner;
+    return Net::LDNS::GC::own($self->_nsec3_salt, $self);
 }
 
 sub hash_name_from_nsec3 {
     my ($self, $name) = @_;
-    my $hash = _hash_name_from_nsec3($self, $name);
-    Net::LDNS::GC::own($hash, $self) if (defined $hash);
-    return $hash;
+    my $hash = $self->_hash_name_from_nsec3($name);
+    return Net::LDNS::GC::own($self->_hash_name_from_nsec3($name), $self);
 }
 
 sub verify_denial {
@@ -370,8 +452,7 @@ sub verify_denial_nsec3_match {
     }
 
     # $match is an RR owned by the $nsecs list.
-    Net::LDNS::GC::own($match, $nsecs);
-    return $match;
+    return Net::LDNS::GC::own($match, $nsecs);
 }
 
 sub DESTROY {
@@ -388,23 +469,24 @@ Net::LDNS - Perl extension for the ldns library
 
   use Net::LDNS ':all'
 
+  my rr = new Net::LDNS::RR('mylabel 3600 IN A 168.10.10.10')
   my rr = new Net::LDNS::RR(
     str => 'mylabel 3600 IN A 168.10.10.10',
     default_ttl => 3600, # optional,
-    origin => new Net::LDNS::RData(LDNS_RDF_TYPE_NAME, 'myzone.'), " optional
+    origin => new Net::LDNS::RData(LDNS_RDF_TYPE_NAME, 'myzone.'), " # optional
   )
   my rr = new Net::LDNS::RR(
     filename => '/path/to/rr',
-    default_ttl => ..., origin => ...)
+    origin => ...)
   my rr = new Net::LDNS::RR(
     file => \*FILE,
-    default_ttl => ..., origin => ...)
+    origin => ...)
   my rr = new Net::LDNS::RR(
     type => LDNS_RR_TYPE_A,
-    rdata => [new RData(...), new RData(...), ...],
-    class => LDNS_RR_CLASS_*, # optional
+    rdata => [new Net::LDNS::RData(...), new Net::LDNS::RData(...), ...],
+    class => LDNS_RR_CLASS_IN, # optional
     ttl => 3600, # optional
-    owner => new RData(LDNS_RDF_TYPE_NAME, 'mylabel'), # optional)
+    owner => new Net::LDNS::RData(LDNS_RDF_TYPE_NAME, 'mylabel'), # optional)
   my rr = new Net::LDNS::RR
 
   rr2 = rr->clone

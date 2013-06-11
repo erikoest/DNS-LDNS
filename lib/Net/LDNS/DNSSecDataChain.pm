@@ -11,23 +11,17 @@ XSLoader::load('Net::LDNS', $VERSION);
 
 sub rrset {
     my $self = shift;
-    my $rrset = _rrset($self);
-    Net::LDNS::GC::own($rrset, $self) if (defined $rrset);
-    return $rrset;
+    return Net::LDNS::GC::own($self->_rrset, $self);
 }
 
 sub signatures {
     my $self = shift;
-    my $sig = _signatures($self);
-    Net::LDNS::GC::own($sig, $self) if (defined $sig);
-    return $sig;
+    return Net::LDNS::GC::own($self->_signatures, $self);
 }
 
 sub parent {
     my $self = shift;
-    my $p = _parent($self);
-    Net::LDNS::GC::own($p, $self) if (defined $p);
-    return $p;
+    return Net::LDNS::GC::own($self->_parent, $self);
 }
 
 sub derive_trust_tree {
@@ -36,9 +30,7 @@ sub derive_trust_tree {
     if (!Net::LDNS::GC::is_owned($rr) or Net::LDNS::GC::owner($rr) ne $self) {
 	die "The rr ($rr) must be in the data chain ($self)";
     }
-    my $tree = _derive_trust_tree($self, $rr);    
-    Net::LDNS::GC::own($tree, $self) if (defined $tree);
-    return $tree;
+    return Net::LDNS::GC::own($self->_derive_trust_tree($rr), $self);
 }
 
 1;

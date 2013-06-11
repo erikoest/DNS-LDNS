@@ -36,16 +36,12 @@ sub add_rr {
 
 sub rr {
     my $self = shift;
-    my $rr = _rr($self);
-    Net::LDNS::GC::own($rr, Net::LDNS::GC::owner($self)) if (defined $rr);
-    return $rr;
+    return Net::LDNS::GC::own($self->_rr, Net::LDNS::GC::owner($self));
 }
 
 sub next {
     my $self = shift;
-    my $rrs = _next($self);
-    Net::LDNS::GC::own($rrs, Net::LDNS::GC::owner($self)) if (defined $rrs);
-    return $rrs;
+    return Net::LDNS::GC::own($self->_next, Net::LDNS::GC::owner($self));
 }
 
 sub DESTROY {

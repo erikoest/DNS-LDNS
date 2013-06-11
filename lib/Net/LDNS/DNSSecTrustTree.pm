@@ -31,23 +31,17 @@ sub contains_keys {
 
 sub rr {
     my $self = shift;
-    my $rr = _rr($self);
-    Net::LDNS::GC::own($rr, $self) if (defined $rr);
-    return $rr;
+    return Net::LDNS::GC::own($self->_rr, $self);
 }
 
 sub rrset {
     my $self = shift;
-    my $rrset = _rrset($self);
-    Net::LDNS::GC::own($rrset, $self) if (defined $rrset);
-    return $rrset;
+    return Net::LDNS::GC::own($self->_rrset, $self);
 }
 
 sub parent {
     my ($self, $i) = @_;
-    my $p = _parent($self, $i);
-    Net::LDNS::GC::own($p, $self) if (defined $p);
-    return $p;
+    return Net::LDNS::GC::own($self->_parent($i), $self);
 }
 
 sub parent_status {
@@ -59,9 +53,7 @@ sub parent_status {
 
 sub parent_signature {
     my ($self, $i) = @_;
-    my $s = _parent($self, $i);
-    Net::LDNS::GC::own($s, $self) if (defined $s);
-    return $s;
+    return Net::LDNS::GC::own($self->_parent_signature($i), $self);
 }
 
 1;

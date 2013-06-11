@@ -10,6 +10,7 @@ sub own {
     my ($obj, $owner) = @_;
 
 #    print STDERR "Owning $obj -> $owner\n";
+    return unless (defined $obj);
 
     if ($owned_by{$$owner}) {
 	# If the owner is an owned object, let obj be owned by
@@ -24,24 +25,21 @@ sub own {
 	$ref_count{$$obj} = 1;
 	$owned_by{$$obj} = $owner;
     }
+    return $obj;
 }
 
 # Return true if the object is owned by someone
 sub is_owned {
-    my $obj = shift;
-
-    return (exists $owned_by{$$obj});
+    return (exists $owned_by{${$_[0]}});
 }
 
 sub owner {
-    my $obj = shift;
-
-    return $owned_by{$$obj};
+    return $owned_by{${$_[0]}};
 }
 
 sub disown {
-    my $obj = shift;
-    delete $owned_by{$$obj};
+    return unless (defined $_[0]);
+    delete $owned_by{${$_[0]}};
 }
 
 my %free_method = (

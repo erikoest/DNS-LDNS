@@ -24,10 +24,8 @@ sub cat {
 
 sub nsec3_hash_name {
     my ($self, $algorithm, $iterations, $salt) = @_;
-
-    my $nsec3 = _nsec3_hash_name($self, $algorithm, $iterations, $salt);
-    Net::LDNS::GC::own($nsec3, $self) if (defined $nsec3);
-    return $nsec3;
+    return Net::LDNS::GC::own(
+	$self->_nsec3_hash_name($algorithm, $iterations, $salt), $self);
 }
 
 sub DESTROY {
@@ -50,7 +48,7 @@ Net::LDNS - Perl extension for the ldns library
   rd->set_type(rdf_type)
 
   rd->print(\*FILE)
-  str = rd->to_string
+'  str = rd->to_string
 
   count = rd->label_count
   rd2 = rd->label(pos)

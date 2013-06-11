@@ -15,16 +15,12 @@ XSLoader::load('Net::LDNS', $VERSION);
 
 sub first {
     my $self = shift;
-    my $node = _first($self);
-    Net::LDNS::GC::own($node, $self) if (defined $node);
-    return $node;
+    return Net::LDNS::GC::own($self->_first, $self);
 }
 
 sub last {
     my $self = shift;
-    my $node = _last($self);
-    Net::LDNS::GC::own($node, $self) if (defined $node);
-    return $node;
+    return Net::LDNS::GC::own($self->_last, $self);
 }
 
 sub DESTROY {

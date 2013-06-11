@@ -15,30 +15,22 @@ XSLoader::load('Net::LDNS', $VERSION);
 
 sub next {
     my $self = shift;
-    my $node = _next($self);
-    Net::LDNS::GC::own($node, $self) if (defined $node);
-    return $node;
+    return Net::LDNS::GC::own($self->_next, $self);
 }
 
 sub previous {
     my $self = shift;
-    my $node = _previous($self);
-    Net::LDNS::GC::own($node, $self) if (defined $node);
-    return $node;
+    return Net::LDNS::GC::own($self->_previous, $self);
 }
 
 sub next_nonglue {
     my $self = shift;
-    my $node = _next_nonglue($self);
-    Net::LDNS::GC::own($node, $self) if (defined $node);
-    return $node;
+    return Net::LDNS::GC::own($self->_next_nonglue, $self);
 }
 
 sub name {
     my ($self) = @_;
-    my $name = _name($self);
-    Net::LDNS::GC::own($name, $self) if (defined $name);
-    return $name;
+    return Net::LDNS::GC::own($self->_name, $self);
 }
 
 sub DESTROY {

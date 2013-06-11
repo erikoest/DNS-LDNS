@@ -23,83 +23,62 @@ sub new {
 
 sub question {
     my $self = shift;
-    my $l = $self->_question;
-    Net::LDNS::GC::own($l, $self) if (defined $l);
-    return $l;
+    return Net::LDNS::GC::own($self->_question, $self);
 }
 
 sub set_question {
     my ($self, $l) = @_;
-    my $old = $self->question;
-    Net::LDNS::GC::disown($old) if (defined $old);
+    Net::LDNS::GC::disown(my $old = $self->question);
     $self->_set_question($l);
-    Net::LDNS::GC::own($l, $self);
-    return $l;
+    return Net::LDNS::GC::own($l, $self);
 }
 
 sub answer {
     my $self = shift;
-    my $l = $self->_answer;
-    Net::LDNS::GC::own($l, $self) if (defined $l);
-    return $l;
+    return Net::LDNS::GC::own($self->_answer, $self);
 }
 
 sub set_answer {
     my ($self, $l) = @_;
-    my $old = $self->answer;
-    Net::LDNS::GC::disown($old) if (defined $old);
+    Net::LDNS::GC::disown(my $old = $self->answer);
     $self->_set_answer($l);
-    Net::LDNS::GC::own($l, $self);
-    return $l;
+    return Net::LDNS::GC::own($l, $self);
 }
 
 sub authority {
     my $self = shift;
-    my $l = $self->_authority;
-    Net::LDNS::GC::own($l, $self) if (defined $l);
-    return $l;
+    return Net::LDNS::GC::own($self->_authority, $self);
 }
 
 sub set_authority {
     my ($self, $l) = @_;
-    my $old = $self->authority;
-    Net::LDNS::GC::disown($old) if (defined $old);
+    Net::LDNS::GC::disown(my $old = $self->authority);
     $self->_set_authority($l);
-    Net::LDNS::GC::own($l, $self);
-    return $l;
+    return Net::LDNS::GC::own($l, $self);
 }
 
 sub additional {
     my $self = shift;
-    my $l = $self->_additional;
-    Net::LDNS::GC::own($l, $self) if (defined $l);
-    return $l;
+    return Net::LDNS::GC::own($self->_additional, $self);
 }
 
 sub set_additional {
     my ($self, $l) = @_;
-    my $old = $self->additional;
-    Net::LDNS::GC::disown($old) if (defined $old);
+    Net::LDNS::GC::disown(my $old = $self->additional);
     $self->_set_additional($l);
-    Net::LDNS::GC::own($l, $self);
-    return $l;
+    return Net::LDNS::GC::own($l, $self);
 }
 
 sub answerfrom {
     my $self = shift;
-
-    my $a = $self->_answerfrom;
-    Net::LDNS::GC::own($a, $self) if (defined $a);
-    return $a; 
+    return Net::LDNS::GC::own($self->_answerfrom, $self);
 }
 
 sub set_answerfrom {
     my ($self, $a) = @_;
-    my $old = $self->answerfrom;
-    Net::LDNS::GC::disown($old) if (defined $old);
+    Net::LDNS::GC::disown(my $old = $self->answerfrom);
     $self->_set_answerfrom($a);
-    Net::LDNS::GC::own($a, $self);
-    return $a;
+    return Net::LDNS::GC::own($a, $self);
 }
 
 
@@ -111,19 +90,14 @@ sub timestamp {
 
 sub edns_data {
     my $self = shift;
-
-    my $data = $self->_edns_data;
-    Net::LDNS::GC::own($data, $self) if (defined $data);
-    return $data;
+    return Net::LDNS::GC::own($self->_edns_data, $self);
 }
 
 sub set_edns_data {
     my ($self, $data) = @_;
-    my $old = $self->edns_data;
-    Net::LDNS::GC::disown($old) if (defined $old);
+    Net::LDNS::GC::disown(my $old = $self->edns_data);
     $self->_set_edns_data($data);
-    Net::LDNS::GC::own($data, $self);
-    return $data;
+    return Net::LDNS::GC::own($data, $self);
 }
 
 sub push_rr {
@@ -146,19 +120,14 @@ sub safe_push_rr {
 
 sub tsig {
     my $self = shift;
-
-    my $rr = $self->_tsig;
-    Net::LDNS::GC::own($rr, $self) if (defined $rr);
-    return $rr;
+    return Net::LDNS::GC::own($self->_tsig, $self);
 }
 
 sub set_tsig {
     my ($self, $rr) = @_;
-    my $old = $self->tsig;
-    Net::LDNS::GC::disown($old) if (defined $old);
+    Net::LDNS::GC::disown(my $old = $self->tsig);
     $self->_set_tsig($rr);
-    Net::LDNS::GC::own($rr, $self);
-    return $rr;
+    return Net::LDNS::GC::own($rr, $self);
 }
 
 sub DESTROY {
