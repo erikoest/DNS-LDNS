@@ -561,7 +561,7 @@ Net::LDNS - Perl extension for the ldns library
   bool = rr->dnskey_set_key(rdata)
   bits = rr->dnskey_key_size
   tag = rr->calc_keytag
-  ds = rr->key_to_ds
+  ds = rr->key_to_ds(hash)
 
   rr->is_question
 

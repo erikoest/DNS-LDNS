@@ -137,10 +137,13 @@ Net::LDNS - Perl extension for the ldns library
   bool = l->contains_rr(rr)
 
   (status, goodkeys) = l->verify(sig, keys)
+  (status, goodkeys) = l->verify_time(sig, keys, checktime)
   (status, goodkeys) = l->verify_notime(sig, keys)
   (status, goodkeys) = l->verify_rrsig_keylist(sig, keys)
+  (status, goodkeys) = l->verify_rrsig_keylist_time(sig, keys, checktime)
   (status, goodkeys) = l->verify_rrsig_keylist_notime(sig, keys)
   status = l->verify_rrsig(sig, keys)
+  status = l->verify_rrsig_time(sig, keys, checktime)
 
   rr = l->create_empty_rrsig(key)
   rrlist = l->sign_public(keylist)

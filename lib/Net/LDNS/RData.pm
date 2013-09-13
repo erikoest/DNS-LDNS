@@ -48,7 +48,7 @@ Net::LDNS - Perl extension for the ldns library
   rd->set_type(rdf_type)
 
   rd->print(\*FILE)
-'  str = rd->to_string
+  str = rd->to_string
 
   count = rd->label_count
   rd2 = rd->label(pos)
