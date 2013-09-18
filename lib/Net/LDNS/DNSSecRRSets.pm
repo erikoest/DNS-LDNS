@@ -4,10 +4,9 @@ use 5.008008;
 use strict;
 use warnings;
 
-our $VERSION = '0.02';
+use Net::LDNS;
 
-require XSLoader;
-XSLoader::load('Net::LDNS', $VERSION);
+our $VERSION = '0.02';
 
 # Note: Since this class does not have a constructor, we can let its child
 # objects be owned by the parent. This reduces the recursion depth on

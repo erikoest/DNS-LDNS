@@ -56,7 +56,7 @@ typedef ldns_signing_algorithm LDNS_Signing_Algorithm;
 
 /* callback function used by the signing methods */
 int sign_policy(ldns_rr *sig, void *n) {
-    return *(int*)n;
+    return *(uint16_t*)n;
 }
 
 /* utility methods */

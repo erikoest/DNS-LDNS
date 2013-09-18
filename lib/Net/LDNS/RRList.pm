@@ -4,10 +4,9 @@ use 5.008008;
 use strict;
 use warnings;
 
-our $VERSION = '0.02';
+use Net::LDNS;
 
-require XSLoader;
-XSLoader::load('Net::LDNS', $VERSION);
+our $VERSION = '0.02';
 
 sub new {
     my ($class, %args) = @_;

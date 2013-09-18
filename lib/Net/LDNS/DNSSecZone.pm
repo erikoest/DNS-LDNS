@@ -8,9 +8,6 @@ use Net::LDNS ':all';
 
 our $VERSION = '0.02';
 
-require XSLoader;
-XSLoader::load('Net::LDNS', $VERSION);
-
 sub new {
     my ($class, %args) = @_;
 
