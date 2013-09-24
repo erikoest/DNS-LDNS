@@ -61,6 +61,14 @@ sub verify {
     return wantarray ? ($s, $goodkeys) : $s;
 }
 
+sub verify_time {
+    my ($self, $sig, $keys, $checktime) = @_;
+    my $goodkeys = new Net::LDNS::RRList;
+    my $s = _verify_time($self, $sig, $keys, $checktime, $goodkeys);
+    $Net::LDNS::last_status = $s;
+    return wantarray ? ($s, $goodkeys) : $s;
+}
+
 sub verify_notime {
     my ($self, $sig, $keys) = @_;
     my $goodkeys = new Net::LDNS::RRList;

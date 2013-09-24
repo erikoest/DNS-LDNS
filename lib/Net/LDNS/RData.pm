@@ -65,8 +65,10 @@ Net::LDNS - Perl extension for the ldns library
 
   rd2 = rd->nsec3_hash_name(name, algorithm, iterations, salt)
 
-  epoch = rd->to_unix_time;
-( epoch = rd->2native_time_t;)
+  epoch = rd->to_unix_time
+( epoch = rd->2native_time_t )
+
+  rr_type = rd->to_rr_type
 
 =head1 SEE ALSO
 

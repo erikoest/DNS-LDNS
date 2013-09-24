@@ -1358,9 +1358,11 @@ _new_from_file(fp, origin, ttl, c, s, line_nr)
             ldns_dnssec_zone *z;
         CODE:
 	RETVAL = NULL;
-/* This method is not available before 1.6.16. In the meantime, use the
-   create_from_zone method. */
-/*	s = ldns_dnssec_zone_new_frm_fp_l(&z, fp, origin, ttl, c, &line_nr); */
+#if LDNS_REVISION < ((1<<16)|(6<<8)|(13))
+	Perl_croak(aTHX_ "function ldns_dnssec_zone_new_frm_fp_l is not implemented in this version of ldns");
+#else
+	s = ldns_dnssec_zone_new_frm_fp_l(&z, fp, origin, ttl, c, &line_nr);
+#endif
 
 	if (s == LDNS_STATUS_OK) {
 	    RETVAL = z;
@@ -2363,6 +2365,60 @@ ldns_resolver_query(resolver, name, type, class, flags)
 	uint16_t flags;
 	ALIAS:
 	query = 1
+
+Net__LDNS__Packet
+_send(resolver, name, type, class, flags, s)
+        Net__LDNS__Resolver resolver;
+	Net__LDNS__RData name;
+	LDNS_RR_Type type;
+	LDNS_RR_Class class;
+	uint16_t flags;
+	LDNS_Status s;
+	PREINIT:
+	    Net__LDNS__Packet packet;
+	CODE:
+	s = ldns_resolver_send(&packet, resolver, name, type, class, flags);
+	if (s == LDNS_STATUS_OK) {
+	    RETVAL = packet;
+	}
+	OUTPUT:
+	RETVAL
+	s
+
+Net__LDNS__Packet
+_send_pkt(resolver, packet, s)
+        Net__LDNS__Resolver resolver;
+	Net__LDNS__Packet packet;
+	LDNS_Status s;
+	PREINIT:
+	    Net__LDNS__Packet answer;
+	CODE:
+	s = ldns_resolver_send_pkt(&answer, resolver, packet);
+	if (s == LDNS_STATUS_OK) {
+	    RETVAL = answer;
+	}
+	OUTPUT:
+	RETVAL
+	s
+
+Net__LDNS__Packet
+_prepare_query_pkt(resolver, name, type, class, flags, s)
+	Net__LDNS__Resolver resolver;
+	Net__LDNS__RData name;
+	LDNS_RR_Type type;
+	LDNS_RR_Class class;
+	uint16_t flags;
+	LDNS_Status s;
+	PREINIT:
+	    Net__LDNS__Packet packet;
+	CODE:
+	s = ldns_resolver_prepare_query_pkt(&packet, resolver, name, type, class, flags);
+	if (s == LDNS_STATUS_OK) {
+	    RETVAL = packet;
+	}
+	OUTPUT:
+	RETVAL
+	s
 
 Net__LDNS__Packet
 ldns_resolver_search(resolver, name, type, class, flags)

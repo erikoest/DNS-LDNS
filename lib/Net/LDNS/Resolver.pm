@@ -166,7 +166,7 @@ sub fetch_valid_domain_keys_time {
 sub prepare_query_pkt {
     my ($self, $rdata, $type, $class, $flags) = @_;
 
-    my $s;
+    my $s = &LDNS_STATUS_OK;
     my $qry = _prepare_query_pkt($self, $rdata, $type, $class, $flags, $s);
     $Net::LDNS::last_status = $s;
     if ($s != LDNS_STATUS_OK) {
@@ -178,7 +178,7 @@ sub prepare_query_pkt {
 sub send {
     my ($self, $rdata, $type, $class, $flags) = @_;
 
-    my $s;
+    my $s = &LDNS_STATUS_OK;
     my $ans = _send($self, $rdata, $type, $class, $flags, $s);
     $Net::LDNS::last_status = $s;
     if ($s != LDNS_STATUS_OK) {
@@ -190,7 +190,7 @@ sub send {
 sub send_pkt {
     my ($self, $qry) = @_;
 
-    my $s;
+    my $s = &LDNS_STATUS_OK;
     my $ans = _send_pkt($self, $qry, $s);
     $Net::LDNS::last_status = $s;
     if ($s != LDNS_STATUS_OK) {
