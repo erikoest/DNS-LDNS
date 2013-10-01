@@ -1,16 +1,12 @@
-LDNS version 0.03
-=================
+Net::LDNS version 0.03
+======================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+DESCRIPTION
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+Net::LDNS is a perl OO-wrapper for the ldns library. For a detailed 
+description on how this library works, you are advised to read the ldns 
+documentation. For a functional description of the wrapper classes,
+please read the perldoc for Net::LDNS and subclasses.
 
 INSTALLATION
 
@@ -28,8 +24,6 @@ This module requires these other modules and libraries:
     ldns
 
 COPYRIGHT AND LICENCE
-
-Put the correct copyright and licence information here.
 
 Copyright (C) 2012 by Erik Pihl Ostlyngen
 
