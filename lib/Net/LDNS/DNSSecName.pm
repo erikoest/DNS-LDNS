@@ -99,7 +99,7 @@ Erik Pihl Ostlyngen, E<lt>erik.ostlyngen@uninett.noE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2013 by Erik Pihl Ostlyngen
+Copyright (C) 2013 by UNINETT Norid AS
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.14.2 or,
