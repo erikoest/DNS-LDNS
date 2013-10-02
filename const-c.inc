@@ -627,11 +627,12 @@ constant_17 (pTHX_ const char *name, IV *iv_return) {
      here.  However, subsequent manual editing may have added or removed some.
      LDNS_CERT_IACPKIX LDNS_KEY_ZONE_KEY LDNS_MAX_LABELLEN LDNS_MAX_POINTERS
      LDNS_PACKET_QUERY LDNS_RDF_TYPE_ALG LDNS_RDF_TYPE_APL LDNS_RDF_TYPE_B64
-     LDNS_RDF_TYPE_HEX LDNS_RDF_TYPE_LOC LDNS_RDF_TYPE_STR LDNS_RDF_TYPE_WKS
-     LDNS_RESOLV_INET6 LDNS_RR_CLASS_ANY LDNS_RR_TYPE_AAAA LDNS_RR_TYPE_ATMA
-     LDNS_RR_TYPE_AXFR LDNS_RR_TYPE_CERT LDNS_RR_TYPE_GPOS LDNS_RR_TYPE_ISDN
-     LDNS_RR_TYPE_IXFR LDNS_RR_TYPE_LAST LDNS_RR_TYPE_NSAP LDNS_RR_TYPE_NSEC
-     LDNS_RR_TYPE_NULL LDNS_RR_TYPE_SINK LDNS_RR_TYPE_TSIG LDNS_SIGN_RSASHA1 */
+     LDNS_RDF_TYPE_HEX LDNS_RDF_TYPE_HIP LDNS_RDF_TYPE_LOC LDNS_RDF_TYPE_STR
+     LDNS_RDF_TYPE_WKS LDNS_RESOLV_INET6 LDNS_RR_CLASS_ANY LDNS_RR_TYPE_AAAA
+     LDNS_RR_TYPE_ATMA LDNS_RR_TYPE_AXFR LDNS_RR_TYPE_CERT LDNS_RR_TYPE_GPOS
+     LDNS_RR_TYPE_ISDN LDNS_RR_TYPE_IXFR LDNS_RR_TYPE_LAST LDNS_RR_TYPE_NSAP
+     LDNS_RR_TYPE_NSEC LDNS_RR_TYPE_NULL LDNS_RR_TYPE_SINK LDNS_RR_TYPE_TSIG
+     LDNS_SIGN_RSASHA1 */
   /* Offset 16 gives the best switch position.  */
   switch (name[16]) {
   case '1':
@@ -731,6 +732,11 @@ constant_17 (pTHX_ const char *name, IV *iv_return) {
     }
     break;
   case 'P':
+    if (memEQ(name, "LDNS_RDF_TYPE_HI", 16)) {
+    /*                               P      */
+      *iv_return = LDNS_RDF_TYPE_HIP;
+      return PERL_constant_ISIV;
+    }
     if (memEQ(name, "LDNS_RR_TYPE_NSA", 16)) {
     /*                               P      */
       *iv_return = LDNS_RR_TYPE_NSAP;
@@ -836,15 +842,14 @@ constant_18 (pTHX_ const char *name, IV *iv_return) {
      LDNS_RCODE_YXRRSET LDNS_RDF_SIZE_BYTE LDNS_RDF_SIZE_WORD
      LDNS_RDF_TYPE_AAAA LDNS_RDF_TYPE_ATMA LDNS_RDF_TYPE_INT8
      LDNS_RDF_TYPE_NONE LDNS_RDF_TYPE_NSAP LDNS_RDF_TYPE_NSEC
-     LDNS_RDF_TYPE_TIME LDNS_RDF_TYPE_TSIG LDNS_RDF_TYPE_TYPE
-     LDNS_RESOLV_ANCHOR LDNS_RESOLV_SEARCH LDNS_RR_CLASS_LAST
-     LDNS_RR_CLASS_NONE LDNS_RR_TYPE_AFSDB LDNS_RR_TYPE_CNAME
-     LDNS_RR_TYPE_COUNT LDNS_RR_TYPE_DHCID LDNS_RR_TYPE_DNAME
-     LDNS_RR_TYPE_FIRST LDNS_RR_TYPE_HINFO LDNS_RR_TYPE_MAILA
-     LDNS_RR_TYPE_MAILB LDNS_RR_TYPE_MINFO LDNS_RR_TYPE_NAPTR
-     LDNS_RR_TYPE_NSEC3 LDNS_RR_TYPE_RRSIG LDNS_RR_TYPE_SSHFP
-     LDNS_RR_TYPE_UINFO LDNS_RSASHA1_NSEC3 LDNS_SIGN_ECC_GOST
-     LDNS_SIGN_HMACSHA1 */
+     LDNS_RDF_TYPE_TIME LDNS_RDF_TYPE_TYPE LDNS_RESOLV_ANCHOR
+     LDNS_RESOLV_SEARCH LDNS_RR_CLASS_LAST LDNS_RR_CLASS_NONE
+     LDNS_RR_TYPE_AFSDB LDNS_RR_TYPE_CNAME LDNS_RR_TYPE_COUNT
+     LDNS_RR_TYPE_DHCID LDNS_RR_TYPE_DNAME LDNS_RR_TYPE_FIRST
+     LDNS_RR_TYPE_HINFO LDNS_RR_TYPE_MAILA LDNS_RR_TYPE_MAILB
+     LDNS_RR_TYPE_MINFO LDNS_RR_TYPE_NAPTR LDNS_RR_TYPE_NSEC3
+     LDNS_RR_TYPE_RRSIG LDNS_RR_TYPE_SSHFP LDNS_RR_TYPE_UINFO
+     LDNS_RSASHA1_NSEC3 LDNS_SIGN_ECC_GOST LDNS_SIGN_HMACSHA1 */
   /* Offset 17 gives the best switch position.  */
   switch (name[17]) {
   case '1':
@@ -987,11 +992,6 @@ constant_18 (pTHX_ const char *name, IV *iv_return) {
     }
     break;
   case 'G':
-    if (memEQ(name, "LDNS_RDF_TYPE_TSI", 17)) {
-    /*                                G      */
-      *iv_return = LDNS_RDF_TYPE_TSIG;
-      return PERL_constant_ISIV;
-    }
     if (memEQ(name, "LDNS_RR_TYPE_RRSI", 17)) {
     /*                                G      */
       *iv_return = LDNS_RR_TYPE_RRSIG;
@@ -2384,6 +2384,7 @@ my @names = (qw(LDNS_AA LDNS_AD LDNS_CD LDNS_DEFAULT_EXP_TIME LDNS_DEFAULT_TTL
             {name=>"LDNS_RDF_TYPE_CLASS", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_DNAME", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_HEX", type=>"IV", macro=>"1"},
+            {name=>"LDNS_RDF_TYPE_HIP", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_INT16", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_INT16_DATA", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_INT32", type=>"IV", macro=>"1"},
@@ -2399,7 +2400,6 @@ my @names = (qw(LDNS_AA LDNS_AD LDNS_CD LDNS_DEFAULT_EXP_TIME LDNS_DEFAULT_TTL
             {name=>"LDNS_RDF_TYPE_SERVICE", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_STR", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_TIME", type=>"IV", macro=>"1"},
-            {name=>"LDNS_RDF_TYPE_TSIG", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_TSIGTIME", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_TYPE", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_UNKNOWN", type=>"IV", macro=>"1"},

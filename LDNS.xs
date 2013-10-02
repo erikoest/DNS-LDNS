@@ -21,6 +21,10 @@
 #include "ldns/dnssec_sign.h"
 #include "ldns/rr_functions.h"
 
+#if LDNS_REVISION < ((1<<16)|(6<<8)|(17))
+  #define LDNS_RDF_TYPE_HIP LDNS_RDF_TYPE_TSIG
+#endif
+
 #include "const-c.inc"
 
 typedef ldns_zone *          Net__LDNS__Zone;

@@ -103,7 +103,7 @@ if  (eval {require ExtUtils::Constant; 1}) {
               {name=>"LDNS_RDF_TYPE_SERVICE", macro=>"1"},
               {name=>"LDNS_RDF_TYPE_STR", macro=>"1"},
               {name=>"LDNS_RDF_TYPE_TIME", macro=>"1"},
-              {name=>"LDNS_RDF_TYPE_TSIG", macro=>"1"},
+              {name=>"LDNS_RDF_TYPE_HIP", macro=>"1"},
               {name=>"LDNS_RDF_TYPE_TSIGTIME", macro=>"1"},
               {name=>"LDNS_RDF_TYPE_TYPE", macro=>"1"},
               {name=>"LDNS_RDF_TYPE_UNKNOWN", macro=>"1"},

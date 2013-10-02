@@ -859,7 +859,7 @@ constant_18 (pTHX_ const char *name, IV *iv_return) {
      LDNS_RCODE_YXRRSET LDNS_RDF_SIZE_BYTE LDNS_RDF_SIZE_WORD
      LDNS_RDF_TYPE_AAAA LDNS_RDF_TYPE_ATMA LDNS_RDF_TYPE_INT8
      LDNS_RDF_TYPE_NONE LDNS_RDF_TYPE_NSAP LDNS_RDF_TYPE_NSEC
-     LDNS_RDF_TYPE_TIME LDNS_RDF_TYPE_TSIG LDNS_RDF_TYPE_TYPE
+     LDNS_RDF_TYPE_TIME LDNS_RDF_TYPE_HIP  LDNS_RDF_TYPE_TYPE
      LDNS_RESOLV_ANCHOR LDNS_RESOLV_SEARCH LDNS_RR_CLASS_LAST
      LDNS_RR_CLASS_NONE LDNS_RR_TYPE_AFSDB LDNS_RR_TYPE_CNAME
      LDNS_RR_TYPE_COUNT LDNS_RR_TYPE_DHCID LDNS_RR_TYPE_DNAME
@@ -1010,9 +1010,9 @@ constant_18 (pTHX_ const char *name, IV *iv_return) {
     }
     break;
   case 'G':
-    if (memEQ(name, "LDNS_RDF_TYPE_TSI", 17)) {
+    if (memEQ(name, "LDNS_RDF_TYPE_HIP", 17)) {
     /*                                G      */
-      *iv_return = LDNS_RDF_TYPE_TSIG;
+      *iv_return = LDNS_RDF_TYPE_HIP;
       return PERL_constant_ISIV;
     }
     if (memEQ(name, "LDNS_RR_TYPE_RRSI", 17)) {
@@ -2333,7 +2333,7 @@ my @names = (qw(LDNS_AA LDNS_AD LDNS_CD LDNS_DEFAULT_TTL LDNS_IP4ADDRLEN
             {name=>"LDNS_RDF_TYPE_SERVICE", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_STR", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_TIME", type=>"IV", macro=>"1"},
-            {name=>"LDNS_RDF_TYPE_TSIG", type=>"IV", macro=>"1"},
+            {name=>"LDNS_RDF_TYPE_HIP", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_TSIGTIME", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_TYPE", type=>"IV", macro=>"1"},
             {name=>"LDNS_RDF_TYPE_UNKNOWN", type=>"IV", macro=>"1"},
