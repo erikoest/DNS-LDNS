@@ -1,10 +1,10 @@
-package Net::LDNS::Packet;
+package DNS::LDNS::Packet;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS;
+use DNS::LDNS;
 
 our $VERSION = '0.02';
 
@@ -22,62 +22,62 @@ sub new {
 
 sub question {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_question, $self);
+    return DNS::LDNS::GC::own($self->_question, $self);
 }
 
 sub set_question {
     my ($self, $l) = @_;
-    Net::LDNS::GC::disown(my $old = $self->question);
+    DNS::LDNS::GC::disown(my $old = $self->question);
     $self->_set_question($l);
-    return Net::LDNS::GC::own($l, $self);
+    return DNS::LDNS::GC::own($l, $self);
 }
 
 sub answer {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_answer, $self);
+    return DNS::LDNS::GC::own($self->_answer, $self);
 }
 
 sub set_answer {
     my ($self, $l) = @_;
-    Net::LDNS::GC::disown(my $old = $self->answer);
+    DNS::LDNS::GC::disown(my $old = $self->answer);
     $self->_set_answer($l);
-    return Net::LDNS::GC::own($l, $self);
+    return DNS::LDNS::GC::own($l, $self);
 }
 
 sub authority {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_authority, $self);
+    return DNS::LDNS::GC::own($self->_authority, $self);
 }
 
 sub set_authority {
     my ($self, $l) = @_;
-    Net::LDNS::GC::disown(my $old = $self->authority);
+    DNS::LDNS::GC::disown(my $old = $self->authority);
     $self->_set_authority($l);
-    return Net::LDNS::GC::own($l, $self);
+    return DNS::LDNS::GC::own($l, $self);
 }
 
 sub additional {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_additional, $self);
+    return DNS::LDNS::GC::own($self->_additional, $self);
 }
 
 sub set_additional {
     my ($self, $l) = @_;
-    Net::LDNS::GC::disown(my $old = $self->additional);
+    DNS::LDNS::GC::disown(my $old = $self->additional);
     $self->_set_additional($l);
-    return Net::LDNS::GC::own($l, $self);
+    return DNS::LDNS::GC::own($l, $self);
 }
 
 sub answerfrom {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_answerfrom, $self);
+    return DNS::LDNS::GC::own($self->_answerfrom, $self);
 }
 
 sub set_answerfrom {
     my ($self, $a) = @_;
-    Net::LDNS::GC::disown(my $old = $self->answerfrom);
+    DNS::LDNS::GC::disown(my $old = $self->answerfrom);
     $self->_set_answerfrom($a);
-    return Net::LDNS::GC::own($a, $self);
+    return DNS::LDNS::GC::own($a, $self);
 }
 
 
@@ -89,21 +89,21 @@ sub timestamp {
 
 sub edns_data {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_edns_data, $self);
+    return DNS::LDNS::GC::own($self->_edns_data, $self);
 }
 
 sub set_edns_data {
     my ($self, $data) = @_;
-    Net::LDNS::GC::disown(my $old = $self->edns_data);
+    DNS::LDNS::GC::disown(my $old = $self->edns_data);
     $self->_set_edns_data($data);
-    return Net::LDNS::GC::own($data, $self);
+    return DNS::LDNS::GC::own($data, $self);
 }
 
 sub push_rr {
     my ($self, $sec, $rr) = @_;
 
     my $ret = $self->_push_rr($sec, my $copy = $_->clone);
-    Net::LDNS::GC::own($copy, $self);
+    DNS::LDNS::GC::own($copy, $self);
     return $ret;
 }
 
@@ -112,40 +112,40 @@ sub safe_push_rr {
 
     my $ret = $self->_safe_push_rr($sec, my $copy = $_->clone);
     if ($ret) {
-	Net::LDNS::GC::own($copy, $self);
+	DNS::LDNS::GC::own($copy, $self);
     }
     return $ret;
 }
 
 sub tsig {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_tsig, $self);
+    return DNS::LDNS::GC::own($self->_tsig, $self);
 }
 
 sub set_tsig {
     my ($self, $rr) = @_;
-    Net::LDNS::GC::disown(my $old = $self->tsig);
+    DNS::LDNS::GC::disown(my $old = $self->tsig);
     $self->_set_tsig($rr);
-    return Net::LDNS::GC::own($rr, $self);
+    return DNS::LDNS::GC::own($rr, $self);
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
-  my pkt = new Net::LDNS::Packet(name => rdata, type => LDNS_RR_TYPE_...,
+  my pkt = new DNS::LDNS::Packet(name => rdata, type => LDNS_RR_TYPE_...,
     class => LDNS_RR_CLASS_..., flags => ...)
-  my pkt = new Net::LDNS::Packet
+  my pkt = new DNS::LDNS::Packet
 
   pkt2 = pkt->clone
 

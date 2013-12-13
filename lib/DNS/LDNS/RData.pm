@@ -1,10 +1,10 @@
-package Net::LDNS::RData;
+package DNS::LDNS::RData;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS;
+use DNS::LDNS;
 
 our $VERSION = '0.02';
 
@@ -17,30 +17,30 @@ sub cat {
     my ($self, $other) = @_;
 
     my $s = _cat($self, $other);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
 sub nsec3_hash_name {
     my ($self, $algorithm, $iterations, $salt) = @_;
-    return Net::LDNS::GC::own(
+    return DNS::LDNS::GC::own(
 	$self->_nsec3_hash_name($algorithm, $iterations, $salt), $self);
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
-  my rd = new Net::LDNS::RData(rdf_type, str)
+  my rd = new DNS::LDNS::RData(rdf_type, str)
   rd2 = rd->clone
 
   rdf_type = rd->type

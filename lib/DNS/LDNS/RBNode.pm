@@ -1,10 +1,10 @@
-package Net::LDNS::RBNode;
+package DNS::LDNS::RBNode;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS;
+use DNS::LDNS;
 
 our $VERSION = '0.02';
 
@@ -14,36 +14,36 @@ our $VERSION = '0.02';
 
 sub next {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_next, $self);
+    return DNS::LDNS::GC::own($self->_next, $self);
 }
 
 sub previous {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_previous, $self);
+    return DNS::LDNS::GC::own($self->_previous, $self);
 }
 
 sub next_nonglue {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_next_nonglue, $self);
+    return DNS::LDNS::GC::own($self->_next_nonglue, $self);
 }
 
 sub name {
     my ($self) = @_;
-    return Net::LDNS::GC::own($self->_name, $self);
+    return DNS::LDNS::GC::own($self->_name, $self);
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
   node2 = node->next
   node2 = node->next_nonglue

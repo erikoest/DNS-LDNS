@@ -1,10 +1,10 @@
-package Net::LDNS::Zone;
+package DNS::LDNS::Zone;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS ':all';
+use DNS::LDNS ':all';
 
 our $VERSION = '0.02';
 
@@ -18,8 +18,8 @@ sub new {
 
     if ($args{filename}) {
 	unless (open FILE, $args{filename}) {
-	    $Net::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
-	    $Net::LDNS::line_nr = 0;
+	    $DNS::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
+	    $DNS::LDNS::line_nr = 0;
 	    return;
 	}
 
@@ -28,9 +28,9 @@ sub new {
 
     if ($file) {
 	$zone = _new_from_file($file, 
-			       $args{origin} || $Net::LDNS::DEFAULT_ORIGIN, 
-			       $args{default_ttl} || $Net::LDNS::DEFAULT_TTL, 
-			       $args{class} || $Net::LDNS::DEFAULT_CLASS, 
+			       $args{origin} || $DNS::LDNS::DEFAULT_ORIGIN, 
+			       $args{default_ttl} || $DNS::LDNS::DEFAULT_TTL, 
+			       $args{class} || $DNS::LDNS::DEFAULT_CLASS, 
 			       $status, $line_nr);
     }
     else {
@@ -41,8 +41,8 @@ sub new {
 	close $file;
     }
 
-    $Net::LDNS::last_status = $status;
-    $Net::LDNS::line_nr = $line_nr;
+    $DNS::LDNS::last_status = $status;
+    $DNS::LDNS::line_nr = $line_nr;
     if (!defined $zone) {
 	return;
     }
@@ -58,30 +58,30 @@ sub to_string {
 
 sub soa {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_soa, $self);
+    return DNS::LDNS::GC::own($self->_soa, $self);
 }
 
 sub set_soa {
     my ($self, $soa) = @_;
-    Net::LDNS::GC::disown(my $old = $self->soa);
+    DNS::LDNS::GC::disown(my $old = $self->soa);
     $self->_set_soa(my $copy = $soa->clone);
-    return Net::LDNS::GC::own($copy, $self);
+    return DNS::LDNS::GC::own($copy, $self);
 }
 
 sub rrs {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_rrs, $self);
+    return DNS::LDNS::GC::own($self->_rrs, $self);
 }
 
 sub set_rrs {
     my ($self, $list) = @_;
-    Net::LDNS::GC::disown(my $old = $self->rrs);
+    DNS::LDNS::GC::disown(my $old = $self->rrs);
     $self->_set_rrs(my $copy = $list->clone);
-    return Net::LDNS::GC::own($copy, $self);
+    return DNS::LDNS::GC::own($copy, $self);
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
@@ -89,23 +89,23 @@ __END__
 
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
-  my z = new Net::LDNS::Zone(
+  my z = new DNS::LDNS::Zone(
     filename => '/path/to/myzone',
-    origin => new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'myzone'), #optional
+    origin => new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'myzone'), #optional
     default_ttl => 3600, #optional
     class => LDNS_RR_CLASS_IN, #optional
   )
-  my z = new Net::LDNS::Zone(
+  my z = new DNS::LDNS::Zone(
     file => \*FILE,
     origin => ..., default_ttl => ..., class => ...
   )
-  my z = new Net::LDNS::Zone
+  my z = new DNS::LDNS::Zone
 
   z->to_string
   z->print(\*FILE)

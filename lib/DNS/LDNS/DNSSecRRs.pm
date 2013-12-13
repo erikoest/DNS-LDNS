@@ -1,10 +1,10 @@
-package Net::LDNS::DNSSecRRs;
+package DNS::LDNS::DNSSecRRs;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS;
+use DNS::LDNS;
 
 our $VERSION = '0.02';
 
@@ -28,33 +28,33 @@ sub add_rr {
     my ($self, $rr) = @_;
 
     my $s = _add_rr($self, my $copy = $rr->clone);
-    Net::LDNS::GC::own($self, $copy);
-    $Net::LDNS::last_status = $s;
+    DNS::LDNS::GC::own($self, $copy);
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
 sub rr {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_rr, Net::LDNS::GC::owner($self));
+    return DNS::LDNS::GC::own($self->_rr, DNS::LDNS::GC::owner($self));
 }
 
 sub next {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_next, Net::LDNS::GC::owner($self));
+    return DNS::LDNS::GC::own($self->_next, DNS::LDNS::GC::owner($self));
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
   rrs->to_string
   rrs->add_rr(rr)

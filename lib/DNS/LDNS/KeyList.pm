@@ -1,10 +1,10 @@
-package Net::LDNS::KeyList;
+package DNS::LDNS::KeyList;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS ':all';
+use DNS::LDNS ':all';
 
 our $VERSION = '0.02';
 
@@ -18,33 +18,33 @@ sub push {
     my ($self, @keys) = @_;
 
     for my $k (@keys) {
-	if (Net::LDNS::GC::is_owned($k)) {
+	if (DNS::LDNS::GC::is_owned($k)) {
 	    die "Cannot push a key on multiple lists.";
 	}
 	$self->_push($k);
-	Net::LDNS::GC::own($k, $self);
+	DNS::LDNS::GC::own($k, $self);
     }
 }
 
 sub key {
     my ($self, $index) = @_;
-    return Net::LDNS::GC::own($self->_key($index), $self);
+    return DNS::LDNS::GC::own($self->_key($index), $self);
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
-  my l = new Net::LDNS::KeyList
+  my l = new DNS::LDNS::KeyList
   l->set_use(bool)
   l->push(@keys)
   key = l->pop
