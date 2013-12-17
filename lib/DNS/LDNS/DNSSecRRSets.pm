@@ -1,10 +1,10 @@
-package Net::LDNS::DNSSecRRSets;
+package DNS::LDNS::DNSSecRRSets;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS;
+use DNS::LDNS;
 
 our $VERSION = '0.02';
 
@@ -14,23 +14,23 @@ our $VERSION = '0.02';
 
 sub rrs {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_rrs, Net::LDNS::GC::owner($self));
+    return DNS::LDNS::GC::own($self->_rrs, DNS::LDNS::GC::owner($self));
 }
 
 sub signatures {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_signatures, Net::LDNS::GC::owner($self));
+    return DNS::LDNS::GC::own($self->_signatures, DNS::LDNS::GC::owner($self));
 }
 
 sub next {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_next, Net::LDNS::GC::owner($self));
+    return DNS::LDNS::GC::own($self->_next, DNS::LDNS::GC::owner($self));
 }
 
 sub set_type {
     my ($self, $type) = @_;
     my $s = _set_type($self, $type);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
@@ -38,23 +38,23 @@ sub add_rr {
     my ($self, $rr) = @_;
 
     my $s = _add_rr($self, my $copy = $rr->clone);
-    $Net::LDNS::last_status = $s;
-    Net::LDNS::GC::own($copy, $self);
+    $DNS::LDNS::last_status = $s;
+    DNS::LDNS::GC::own($copy, $self);
     return $s;
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
   rrs = rrsets->rrs
   rrs = rrsets->signatures

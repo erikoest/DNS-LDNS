@@ -1,4 +1,4 @@
-package Net::LDNS;
+package DNS::LDNS;
 
 use 5.014002;
 use strict;
@@ -660,7 +660,7 @@ sub AUTOLOAD {
     my $constname;
     our $AUTOLOAD;
     ($constname = $AUTOLOAD) =~ s/.*:://;
-    croak "&Net::LDNS::constant not defined" if $constname eq 'constant';
+    croak "&DNS::LDNS::constant not defined" if $constname eq 'constant';
     my ($error, $val) = constant($constname);
     if ($error) { croak $error; }
     {
@@ -677,7 +677,7 @@ sub AUTOLOAD {
 }
 
 require XSLoader;
-XSLoader::load('Net::LDNS', $VERSION);
+XSLoader::load('DNS::LDNS', $VERSION);
 
 # Preloaded methods go here.
 
@@ -685,31 +685,31 @@ our $last_status;
 our $line_nr;
 
 sub last_error {
-    return errorstr_by_id($Net::LDNS::last_status);
+    return errorstr_by_id($DNS::LDNS::last_status);
 }
 
-require Net::LDNS::RR;
-require Net::LDNS::GC;
-require Net::LDNS::RData;
-require Net::LDNS::Zone;
-require Net::LDNS::RRList;
-require Net::LDNS::DNSSecZone;
-require Net::LDNS::DNSSecRRSets;
-require Net::LDNS::DNSSecRRs;
-require Net::LDNS::DNSSecName;
-require Net::LDNS::RBTree;
-require Net::LDNS::RBNode;
-require Net::LDNS::Resolver;
-require Net::LDNS::Packet;
-require Net::LDNS::Key;
-require Net::LDNS::KeyList;
-require Net::LDNS::DNSSecDataChain;
-require Net::LDNS::DNSSecTrustTree;
+require DNS::LDNS::RR;
+require DNS::LDNS::GC;
+require DNS::LDNS::RData;
+require DNS::LDNS::Zone;
+require DNS::LDNS::RRList;
+require DNS::LDNS::DNSSecZone;
+require DNS::LDNS::DNSSecRRSets;
+require DNS::LDNS::DNSSecRRs;
+require DNS::LDNS::DNSSecName;
+require DNS::LDNS::RBTree;
+require DNS::LDNS::RBNode;
+require DNS::LDNS::Resolver;
+require DNS::LDNS::Packet;
+require DNS::LDNS::Key;
+require DNS::LDNS::KeyList;
+require DNS::LDNS::DNSSecDataChain;
+require DNS::LDNS::DNSSecTrustTree;
 
 # Some default values used by the constructors
 our $DEFAULT_CLASS = &LDNS_RR_CLASS_IN;
 our $DEFAULT_TTL = 86400;         # 1d
-our $DEFAULT_ORIGIN = new Net::LDNS::RData(&LDNS_RDF_TYPE_DNAME, '.');
+our $DEFAULT_ORIGIN = new DNS::LDNS::RData(&LDNS_RDF_TYPE_DNAME, '.');
 our $DEFAULT_SOA_REFRESH = 86400; # 1d
 our $DEFAULT_SOA_RETRY = 3600;    # 1h
 our $DEFAULT_SOA_EXPIRE = 604800; # 1w
@@ -722,11 +722,11 @@ __END__
 
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
   str = rr_type2str(type)
   str = rr_class2str(class)
@@ -735,8 +735,8 @@ Net::LDNS - Perl extension for the ldns library
   str = pkt_opcode2str(opcode)
   str = pkt_rcode2str(rcode)
   error = errorstr_by_id(status)
-  str = Net::LDNS::last_error
-  status = Net::LDNS::last_status
+  str = DNS::LDNS::last_error
+  status = DNS::LDNS::last_status
   rr = dnssec_create_nsec(from, to, type)
   rr = dnssec_create_nsec3(from, to, algorithm, flags, iterations, salt)
   rr = create_nsec(current, next, rrs)
@@ -748,79 +748,79 @@ Net::LDNS - Perl extension for the ldns library
 
 =head1 DESCRIPTION
 
-Net::LDNS is a perl OO-wrapper for the ldns library. For a detailed description on how this library works, you are advised to read the ldns documentation. Here follows a very brief description of the classes included in this package and how they map to the ldns library structures:
+DNS::LDNS is a perl OO-wrapper for the ldns library. For a detailed description on how this library works, you are advised to read the ldns documentation. Here follows a very brief description of the classes included in this package and how they map to the ldns library structures:
 
 =over 20
 
-=item B<Net::LDNS>
+=item B<DNS::LDNS>
 
 Base class with static functions and constants
 
-=item B<Net::LDNS::Zone>
+=item B<DNS::LDNS::Zone>
 
 Represents a parsed zonefile (maps to the ldns_zone struct)
 
-=item B<Net::LDNS::RRList>
+=item B<DNS::LDNS::RRList>
 
 Represents a list of RRs. This class is also used to represent an RRSet all the dnames and types are equal, (maps to the the ldns_rr_list struct)
 
-=item B<Net::LDNS::RR>
+=item B<DNS::LDNS::RR>
 
 Represents a resource record (RR), (maps to the ldns_rr struct)
 
-=item B<Net::LDNS::RData>
+=item B<DNS::LDNS::RData>
 
 Represents an rdata field or a dname in an RR (maps to the ldns_rdf struct)
 
-=item B<Net::LDNS::Resolver>
+=item B<DNS::LDNS::Resolver>
 
 Represents a DNS resolver (maps to the ldns_resolver struct)
 
-=item B<Net::LDNS::Packet>
+=item B<DNS::LDNS::Packet>
 
 Represents a DNS package (maps to the ldns_pkt struct)
 
-=item B<Net::LDNS::Key>
+=item B<DNS::LDNS::Key>
 
 Represents a DNSSec private key (maps to the ldns_key struct)
 
-=item B<Net::LDNS::KeyList>
+=item B<DNS::LDNS::KeyList>
 
 Represents a linked list of keys (maps to the ldns_key_list struct)
 
-=item B<Net::LDNS::DNSSecZone>
+=item B<DNS::LDNS::DNSSecZone>
 
 Represents a zone with dnssec data (maps to the ldns_dnssec_zone struct)
 
-=item B<Net::LDNS::RBTree>
+=item B<DNS::LDNS::RBTree>
 
 Represents a tree of DNSSecName nodes (maps to the ldns_rbtree struct)
 
-=item B<Net::LDNS::RBNode>
+=item B<DNS::LDNS::RBNode>
 
 Represents a node in the RBTree (maps to the ldns_rbnode struct)
 
-=item B<Net::LDNS::DNSSecName>
+=item B<DNS::LDNS::DNSSecName>
 
 Represents a dname in a DNSSecZone and holds a DNSSecRRSets list for this dname, possibly with signatures (maps to the ldns_dnssec_name struct)
 
-=item B<Net::LDNS::DNSSecRRSets>
+=item B<DNS::LDNS::DNSSecRRSets>
 
 Represents a linked list of DNSSec RR sets, possibly with signatures (maps to the ldns_dnssec_rrsets struct)
 
-=item B<Net::LDNS::DNSSecRRs>
+=item B<DNS::LDNS::DNSSecRRs>
 
 Represents a linked list of RRs (maps to the ldns_dnssec_rrs struct)
 
-=item B<Net::LDNS::DNSSecDataChain>
+=item B<DNS::LDNS::DNSSecDataChain>
 
 Represents a chain of RR, DNSKEY, and DS data used for building a dnssec trust tree (maps to the ldns_dnssec_data_chain struct)
 
-=item B<Net::LDNS::DNSSecTrustTree>
+=item B<DNS::LDNS::DNSSecTrustTree>
 
 Represents a tree of chained trust relationships from a signed RR to a set of trust anchors (maps to the ldns_dnssec_trust_tree struct).
 
-=item B<Net::LDNS::GC>
+=item B<DNS::LDNS::GC>
 
 Garbage collector. Handles ownership dependencies and freeing data used by the other classes. Used internally only.
 
@@ -834,9 +834,9 @@ Since some of the objects are found as sub objects within other objects, it is i
 
 =head3 Examples
 
-Net::LDNS::Zone::rrs returns a reference to the Net::LDNS::RRList within the zone, so if you make changes to the RRList you also changes the Zone object. 
+DNS::LDNS::Zone::rrs returns a reference to the DNS::LDNS::RRList within the zone, so if you make changes to the RRList you also changes the Zone object. 
 
-Net::LDNS::RRList::push(rr) clones the rr, then pushes the cloned rr to the list. Changing the rr afterwards will not change the list.
+DNS::LDNS::RRList::push(rr) clones the rr, then pushes the cloned rr to the list. Changing the rr afterwards will not change the list.
 
 An exception is the Key class which does not have a clone mechanism. In this case we allow a free Key to be added to only one KeyList. Adding it to multiple lists will provoke an error.
 
@@ -846,7 +846,7 @@ The wrapper keeps track of allocated data structures and references. Whenever da
 
 The purpose for writing this wrapper class has been to be able to process zone file data with good time performance. Data checking and error handling is a bit sparse. Calling a method with wrong argument types will some times kill the application with an intelligible error message, in other cases it may provoke a segmentation fault. Using out-of-range data values, e.g. in array indexes, may also cause unexpected results.
 
-Most constructors and all methods returning a status will update the static Net::LDNS::last_status variable. Most methods do not return a status and will not reset this variable even though they succeeds.
+Most constructors and all methods returning a status will update the static DNS::LDNS::last_status variable. Most methods do not return a status and will not reset this variable even though they succeeds.
 
 =head2 EXPORT
 

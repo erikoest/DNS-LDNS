@@ -1,28 +1,28 @@
 use Test::More tests => 18;
 
-use Net::LDNS ':all';
+use DNS::LDNS ':all';
 
-BEGIN { use_ok('Net::LDNS') };
+BEGIN { use_ok('DNS::LDNS') };
 
 # Integer data
-my $i = new Net::LDNS::RData(LDNS_RDF_TYPE_INT32, '1237654');
+my $i = new DNS::LDNS::RData(LDNS_RDF_TYPE_INT32, '1237654');
 is($i->to_string, '1237654', 'Integer value rdata');
 
-my $ii = new Net::LDNS::RData(LDNS_RDF_TYPE_INT32, '1237654X');
+my $ii = new DNS::LDNS::RData(LDNS_RDF_TYPE_INT32, '1237654X');
 is($ii, undef, '1237654X is invalid');
 
 # Period data
-my $p1 = new Net::LDNS::RData(LDNS_RDF_TYPE_PERIOD, '3h3m3s');
+my $p1 = new DNS::LDNS::RData(LDNS_RDF_TYPE_PERIOD, '3h3m3s');
 is($p1->to_string, sprintf("%d", 3600*3 + 60*3 + 3), 'Normalizing period');
 
-my $pi = new Net::LDNS::RData(LDNS_RDF_TYPE_PERIOD, '3h3X3s');
+my $pi = new DNS::LDNS::RData(LDNS_RDF_TYPE_PERIOD, '3h3X3s');
 is($pi, undef, 'Invalid period value 3h3X3s');
 
 # DNames
-my $dn1 = new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'azone.org');
-my $dn2 = new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'other.org');
-my $dn3 = new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'sub.other.org');
-my $dn4 = new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'adder.org');
+my $dn1 = new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'azone.org');
+my $dn2 = new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'other.org');
+my $dn3 = new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'sub.other.org');
+my $dn4 = new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'adder.org');
 
 $dn1->cat($dn2);
 is($dn1->to_string, 'azone.org.other.org.', 'Concatenating two domain names');
@@ -33,11 +33,11 @@ ok(!$dn2->is_subdomain($dn3), 'other.org is not subdomain of sub.other.org');
 is($dn3->label_count, 3, 'sub.other.org has 3 labels');
 is($dn3->label(1)->to_string, 'other.', 'label 1 of sub.other.org is other.');
 
-my $dni = new Net::LDNS::RData(
+my $dni = new DNS::LDNS::RData(
     LDNS_RDF_TYPE_DNAME, 'not..valid.org');
 is($dni, undef, 'Invalid dname not_valid.org');
 
-my $wc = new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, '*.other.org');
+my $wc = new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, '*.other.org');
 ok($wc->is_wildcard, '*.other.org is a wildcard');
 ok(!$dn3->is_wildcard, 'sub.other.org is not a wildcard');
 ok($dn3->matches_wildcard($wc), 'sub.other.org matches *.other.org');

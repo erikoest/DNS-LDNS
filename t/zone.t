@@ -2,26 +2,26 @@ use Test::More tests => 16;
 
 use FindBin qw/$Bin/;
 
-use Net::LDNS ':all';
+use DNS::LDNS ':all';
 
-BEGIN { use_ok('Net::LDNS') };
+BEGIN { use_ok('DNS::LDNS') };
 
 # Create a new zone
-my $z = new Net::LDNS::Zone;
-isa_ok($z, 'Net::LDNS::Zone', 'Create an empty zone');
+my $z = new DNS::LDNS::Zone;
+isa_ok($z, 'DNS::LDNS::Zone', 'Create an empty zone');
 
 # Fill inn a soa and some rrs
-$z->set_soa(new Net::LDNS::RR(str => join(' ', qw/myzone.org 1000 IN SOA 
+$z->set_soa(new DNS::LDNS::RR(str => join(' ', qw/myzone.org 1000 IN SOA 
     hostmaster.myzone.org. master.myzone.org. 2012113030 12345 1827 2345678 
     87654/)));
 
 is($z->soa->dname, 'myzone.org.', 'Found soa record');
 
-my $rrs = new Net::LDNS::RRList;
-$rrs->push(new Net::LDNS::RR(str => 'ns2.myzone.org 3600 IN A 192.168.100.2'),
-	   new Net::LDNS::RR(str => 'ns2.myzone.org 3600 IN A 192.168.100.9'),
-	   new Net::LDNS::RR(str => 'ns3.myzone.org 3600 IN A 192.168.100.2'),
-	   new Net::LDNS::RR(str => 'ns1.myzone.org 3600 IN A 192.168.100.7'));
+my $rrs = new DNS::LDNS::RRList;
+$rrs->push(new DNS::LDNS::RR(str => 'ns2.myzone.org 3600 IN A 192.168.100.2'),
+	   new DNS::LDNS::RR(str => 'ns2.myzone.org 3600 IN A 192.168.100.9'),
+	   new DNS::LDNS::RR(str => 'ns3.myzone.org 3600 IN A 192.168.100.2'),
+	   new DNS::LDNS::RR(str => 'ns1.myzone.org 3600 IN A 192.168.100.7'));
 
 $z->set_rrs($rrs);
 is($z->rrs->rr(0)->to_string, "ns2.myzone.org.\t3600\tIN\tA\t192.168.100.2\n",
@@ -36,7 +36,7 @@ is($z->rrs->rr(3)->to_string, "ns3.myzone.org.\t3600\tIN\tA\t192.168.100.2\n",
     'Check last rr after sorting');
 
 # Read a zone from file
-my $z2 = new Net::LDNS::Zone(
+my $z2 = new DNS::LDNS::Zone(
     filename => "$Bin/testdata/myzone.org", ttl => 100);
 
 $z2->canonicalize;
@@ -51,10 +51,10 @@ like($z2->to_string, qr/ns2.myzone.org.\s+5600\s+IN\s+AAAA\s+2001:dead:dead::2/,
 
 is($z2->rrs->rr_count, 5, 'Zone has 5 rrs');
 
-my $klist = new Net::LDNS::KeyList;
-$klist->push(new Net::LDNS::Key(filename => "$Bin/testdata/key.private"));
+my $klist = new DNS::LDNS::KeyList;
+$klist->push(new DNS::LDNS::Key(filename => "$Bin/testdata/key.private"));
 $klist->key(0)->set_pubkey_owner(
-	new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'myzone.org'));
+	new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'myzone.org'));
 
 my $z3 = $z2->sign($klist);
 

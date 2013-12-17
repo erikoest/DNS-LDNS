@@ -1,10 +1,10 @@
-package Net::LDNS::RBTree;
+package DNS::LDNS::RBTree;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS;
+use DNS::LDNS;
 
 our $VERSION = '0.02';
 
@@ -14,26 +14,26 @@ our $VERSION = '0.02';
 
 sub first {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_first, $self);
+    return DNS::LDNS::GC::own($self->_first, $self);
 }
 
 sub last {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_last, $self);
+    return DNS::LDNS::GC::own($self->_last, $self);
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
   rbnode = rbtree->first
   rbnode = rbtree->last

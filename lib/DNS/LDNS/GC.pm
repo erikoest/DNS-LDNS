@@ -1,4 +1,4 @@
-package Net::LDNS::GC;
+package DNS::LDNS::GC;
 
 use strict;
 use warnings;
@@ -43,21 +43,21 @@ sub disown {
 }
 
 my %free_method = (
-    'Net::LDNS::Zone'         => '_zone_deep_free',
-    'Net::LDNS::RRList'       => '_rrlist_deep_free',
-    'Net::LDNS::RR'           => '_rr_free',
-    'Net::LDNS::RData'        => '_rdata_deep_free',
-    'Net::LDNS::DNSSecZone'   => '_dnssec_zone_deep_free',
-    'Net::LDNS::DNSSecName'   => '_dnssec_name_deep_free',
-    'Net::LDNS::Resolver'     => '_resolver_deep_free',
-    'Net::LDNS::Packet'       => '_packet_free',
-    'Net::LDNS::Key'          => '_key_deep_free',
-    'Net::LDNS::KeyList'      => '_keylist_free',
-    'Net::LDNS::DNSSecDataChain' => '_dnssec_datachain',
+    'DNS::LDNS::Zone'         => '_zone_deep_free',
+    'DNS::LDNS::RRList'       => '_rrlist_deep_free',
+    'DNS::LDNS::RR'           => '_rr_free',
+    'DNS::LDNS::RData'        => '_rdata_deep_free',
+    'DNS::LDNS::DNSSecZone'   => '_dnssec_zone_deep_free',
+    'DNS::LDNS::DNSSecName'   => '_dnssec_name_deep_free',
+    'DNS::LDNS::Resolver'     => '_resolver_deep_free',
+    'DNS::LDNS::Packet'       => '_packet_free',
+    'DNS::LDNS::Key'          => '_key_deep_free',
+    'DNS::LDNS::KeyList'      => '_keylist_free',
+    'DNS::LDNS::DNSSecDataChain' => '_dnssec_datachain',
 );
 
 my %not_deleted_by_owner = (
-    'Net::LDNS::DNSSecTrustChain' => 1,
+    'DNS::LDNS::DNSSecTrustChain' => 1,
 );
 
 sub free {
@@ -93,11 +93,11 @@ sub free {
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-Garbage collector class for Net::LDNS objects.
+Garbage collector class for DNS::LDNS objects.
 
 =head1 SEE ALSO
 

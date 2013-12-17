@@ -1,10 +1,10 @@
-package Net::LDNS::Resolver;
+package DNS::LDNS::Resolver;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS ':all';
+use DNS::LDNS ':all';
 
 our $VERSION = '0.02';
 
@@ -16,8 +16,8 @@ sub new {
 
     if ($args{filename}) {
 	unless (open FILE, $args{filename}) {
-	    $Net::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
-	    $Net::LDNS::line_nr = 0;
+	    $DNS::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
+	    $DNS::LDNS::line_nr = 0;
 	    return;
 	}
 
@@ -39,7 +39,7 @@ sub new {
 	close $file;
     }
 
-    $Net::LDNS::last_status = $status;
+    $DNS::LDNS::last_status = $status;
     if (!defined $resolver) {
 	return;
     }
@@ -49,41 +49,41 @@ sub new {
 
 sub dnssec_anchors {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_dnssec_anchors, $self);
+    return DNS::LDNS::GC::own($self->_dnssec_anchors, $self);
 }
 
 sub push_dnssec_anchor {
     my ($self, $rr) = @_;
     
     _push_dnssec_anchor($self, my $copy = $rr->clone);
-    Net::LDNS::GC::own($copy, $self);
+    DNS::LDNS::GC::own($copy, $self);
 }
 
 sub set_dnssec_anchors {
     my ($self, $l) = @_;
-    Net::LDNS::GC::disown(my $old = $self->dnssec_anchors);
+    DNS::LDNS::GC::disown(my $old = $self->dnssec_anchors);
     $self->_set_dnssec_anchors($l);
-    Net::LDNS::GC::own($l, $self);
+    DNS::LDNS::GC::own($l, $self);
     return $l;
 }
 
 sub domain {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_domain, $self);
+    return DNS::LDNS::GC::own($self->_domain, $self);
 }
 
 sub set_domain {
     my ($self, $dom) = @_;
-    Net::LDNS::GC::disown(my $old = $self->domain);
+    DNS::LDNS::GC::disown(my $old = $self->domain);
     _set_domain($self, my $copy = $dom->clone);
-    Net::LDNS::GC::own($copy, $self);
+    DNS::LDNS::GC::own($copy, $self);
 }
 
 sub nameservers {
     my $self = shift;
     my $list = _nameservers($self);
     for my $r (@$list) {
-	Net::LDNS::GC::own($r, $self);
+	DNS::LDNS::GC::own($r, $self);
     }
     return wantarray ? @$list : $list;
 }
@@ -92,28 +92,28 @@ sub push_nameserver {
     my ($self, $n) = @_;
 
     my $s = _push_nameserver($self, my $copy = $n->clone);
-    Net::LDNS::GC::own($copy, $self);
-    $Net::LDNS::last_status = $s;
+    DNS::LDNS::GC::own($copy, $self);
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
 sub pop_nameserver {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_pop_nameserver);
+    return DNS::LDNS::GC::own($self->_pop_nameserver);
 }
 
 sub push_searchlist {
     my ($self, $rd) = @_;
 
     _push_searchlist($self, my $copy = $rd->clone);
-    Net::LDNS::GC::own($copy, $self);
+    DNS::LDNS::GC::own($copy, $self);
 }
 
 sub searchlist {
     my $self = shift;
     my $list = _searchlist($self);
     for my $r (@$list) {
-	Net::LDNS::GC::own($r, $self);
+	DNS::LDNS::GC::own($r, $self);
     }
     return wantarray ? @$list : $list;
 }
@@ -141,12 +141,12 @@ sub fetch_valid_domain_keys {
 
     my $status;
     my $trusted = _fetch_valid_domain_keys($self, $domain, $keys, $status);
-    $Net::LDNS::last_status = $status;
+    $DNS::LDNS::last_status = $status;
     if (!$trusted) {
 	return;
     }
 
-    return Net::LDNS::GC::own($trusted, $self);
+    return DNS::LDNS::GC::own($trusted, $self);
 }
 
 sub fetch_valid_domain_keys_time {
@@ -155,12 +155,12 @@ sub fetch_valid_domain_keys_time {
     my $status;
     my $trusted = _fetch_valid_domain_keys_time(
 	$self, $domain, $keys, $checktime, $status);
-    $Net::LDNS::last_status = $status;
+    $DNS::LDNS::last_status = $status;
     if (!$trusted) {
 	return;
     }
 
-    return Net::LDNS::GC::own($trusted, $self);
+    return DNS::LDNS::GC::own($trusted, $self);
 }
 
 sub prepare_query_pkt {
@@ -168,7 +168,7 @@ sub prepare_query_pkt {
 
     my $s = &LDNS_STATUS_OK;
     my $qry = _prepare_query_pkt($self, $rdata, $type, $class, $flags, $s);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     if ($s != LDNS_STATUS_OK) {
 	return;
     }
@@ -180,7 +180,7 @@ sub send {
 
     my $s = &LDNS_STATUS_OK;
     my $ans = _send($self, $rdata, $type, $class, $flags, $s);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     if ($s != LDNS_STATUS_OK) {
 	return;
     }
@@ -192,7 +192,7 @@ sub send_pkt {
 
     my $s = &LDNS_STATUS_OK;
     my $ans = _send_pkt($self, $qry, $s);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     if ($s != LDNS_STATUS_OK) {
 	return;
     }
@@ -202,7 +202,7 @@ sub send_pkt {
 sub verify_trusted {
     my ($self, $rrset, $rrsigs, $validating_keys) = @_;
     my $s = _verify_trusted($self, $rrset, $rrsigs, $validating_keys);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
@@ -210,26 +210,26 @@ sub verify_trusted_time {
     my ($self, $rrset, $rrsigs, $check_time, $validating_keys) = @_;
     my $s = _verify_trusted_time($self, $rrset, $rrsigs, $check_time, 
 			    $validating_keys);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
-  my r = new Net::LDNS::Resolver(filename => '/my/resolv.conf')
-  my r = new Net::LDNS::Resolver(file => \*FILE)
-  my r = new Net::LDNS::Resolver
+  my r = new DNS::LDNS::Resolver(filename => '/my/resolv.conf')
+  my r = new DNS::LDNS::Resolver(file => \*FILE)
+  my r = new DNS::LDNS::Resolver
 
   bool = r->dnssec
   r->set_dnssec(bool)

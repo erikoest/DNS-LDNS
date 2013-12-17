@@ -1,10 +1,10 @@
-package Net::LDNS::DNSSecName;
+package DNS::LDNS::DNSSecName;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS ':all';
+use DNS::LDNS ':all';
 
 our $VERSION = '0.02';
 
@@ -15,68 +15,68 @@ sub new {
 
 sub name {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_name, $self);
+    return DNS::LDNS::GC::own($self->_name, $self);
 }
 
 sub set_name {
     my ($self, $name) = @_;
 
-    Net::LDNS::GC::disown(my $old = $self->name);
+    DNS::LDNS::GC::disown(my $old = $self->name);
     _set_name($self, my $copy = $name->clone);
-    Net::LDNS::GC::own($copy, $self);
+    DNS::LDNS::GC::own($copy, $self);
 }
 
 sub rrsets {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_rrsets, $self);
+    return DNS::LDNS::GC::own($self->_rrsets, $self);
 }
 
 sub add_rr {
     my ($self, $rr) = @_;
 
     my $s = _add_rr($self, my $copy = $rr->clone);
-    Net::LDNS::GC::own($copy, $self);
-    $Net::LDNS::last_status = $s;
+    DNS::LDNS::GC::own($copy, $self);
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
 sub nsec {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_nsec, $self);
+    return DNS::LDNS::GC::own($self->_nsec, $self);
 }
 
 sub set_nsec {
     my ($self, $nsec) = @_;
 
-    Net::LDNS::GC::disown(my $old = $self->nsec);
+    DNS::LDNS::GC::disown(my $old = $self->nsec);
     _set_nsec($self, my $copy = $nsec->clone);
-    Net::LDNS::GC::own($copy, $self);
+    DNS::LDNS::GC::own($copy, $self);
 }
 
 sub hashed_name {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_hashed_name, $self);
+    return DNS::LDNS::GC::own($self->_hashed_name, $self);
 }
 
 sub nsec_signatures {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_nsec_signatures, $self);
+    return DNS::LDNS::GC::own($self->_nsec_signatures, $self);
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
   use LDNS ':all'
 
-  my name = new Net::LDNS::DNSSecName
+  my name = new DNS::LDNS::DNSSecName
 
   rdata = name->name
   name->set_name(rdata)

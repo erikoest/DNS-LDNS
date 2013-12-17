@@ -1,10 +1,10 @@
-package Net::LDNS::RRList;
+package DNS::LDNS::RRList;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS;
+use DNS::LDNS;
 
 our $VERSION = '0.02';
 
@@ -15,13 +15,13 @@ sub new {
 	my $file = $args{hosts_file};
 	if ($args{hosts_filename}) {
 	    unless (open FILE, $args{hosts_filename}) {
-		$Net::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
-		$Net::LDNS::line_nr = 0;
+		$DNS::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
+		$DNS::LDNS::line_nr = 0;
 		return;
 	    }
 	    $file = \*FILE;
 	}
-	my $list = _new_hosts_from_file($file, $Net::LDNS::line_nr);
+	my $list = _new_hosts_from_file($file, $DNS::LDNS::line_nr);
 	if ($args{hosts_filename}) {
 	    close $file;
 	}
@@ -33,7 +33,7 @@ sub new {
 
 sub rr {
     my ($self, $index) = @_;
-    return Net::LDNS::GC::own($self->_rr($index), $self);
+    return DNS::LDNS::GC::own($self->_rr($index), $self);
 }
 
 sub push {
@@ -42,7 +42,7 @@ sub push {
     for my $rr (@rrs) {
 	# Push a copy of the rr in case it is already owned
 	$self->_push(my $copy = $rr->clone);
-	Net::LDNS::GC::own($copy, $self);
+	DNS::LDNS::GC::own($copy, $self);
     }
 }
 
@@ -50,76 +50,76 @@ sub push_list {
     my ($self, $list) = @_;
 
     $self->_push_list(my $copy = $list->clone);
-    Net::LDNS::GC::own($copy, $self);
+    DNS::LDNS::GC::own($copy, $self);
 }
 
 sub verify {
     my ($self, $sig, $keys) = @_;
-    my $goodkeys = new Net::LDNS::RRList;
+    my $goodkeys = new DNS::LDNS::RRList;
     my $s = _verify($self, $sig, $keys, $goodkeys);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return wantarray ? ($s, $goodkeys) : $s;
 }
 
 sub verify_time {
     my ($self, $sig, $keys, $checktime) = @_;
-    my $goodkeys = new Net::LDNS::RRList;
+    my $goodkeys = new DNS::LDNS::RRList;
     my $s = _verify_time($self, $sig, $keys, $checktime, $goodkeys);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return wantarray ? ($s, $goodkeys) : $s;
 }
 
 sub verify_notime {
     my ($self, $sig, $keys) = @_;
-    my $goodkeys = new Net::LDNS::RRList;
+    my $goodkeys = new DNS::LDNS::RRList;
     my $s = _verify_notime($self, $sig, $keys, $goodkeys);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return wantarray ? ($s, $goodkeys) : $s;
 }
 
 sub verify_rrsig_keylist {
     my ($self, $sig, $keys) = @_;
-    my $goodkeys = new Net::LDNS::RRList;
+    my $goodkeys = new DNS::LDNS::RRList;
     my $s = _verify_rrsig_keylist($self, $sig, $keys, $goodkeys);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return wantarray ? ($s, $goodkeys) : $s;
 }
 
 sub verify_rrsig_keylist_notime {
     my ($self, $sig, $keys, $check_time) = @_;
-    my $goodkeys = new Net::LDNS::RRList;
+    my $goodkeys = new DNS::LDNS::RRList;
     my $s = _verify_rrsig_keylist_notime($self, $sig, $keys, $goodkeys);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return wantarray ? ($s, $goodkeys) : $s;
 }
 
 sub get_dnskey_for_rrsig {
     my ($self, $rrsig) = @_;
-    return Net::LDNS::GC::own(_get_dnskey_for_rrsig($rrsig, $self), $self);
+    return DNS::LDNS::GC::own(_get_dnskey_for_rrsig($rrsig, $self), $self);
 }
 
 sub get_rrsig_for_name_and_type {
     my ($self, $name, $type) = @_;
-    return Net::LDNS::GC::own(
+    return DNS::LDNS::GC::own(
 	_get_dnskey_for_name_and_type($name, $type, $self), $self);
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
-  my l = new Net::LDNS::RRList
-  my l = new Net::LDNS::RRList(hosts_file => \*FILE)
-  my l = new Net::LDNS::RRList(hosts_filename => fname)
+  my l = new DNS::LDNS::RRList
+  my l = new DNS::LDNS::RRList(hosts_file => \*FILE)
+  my l = new DNS::LDNS::RRList(hosts_filename => fname)
   my l2 = l->clone
 
   l->to_string

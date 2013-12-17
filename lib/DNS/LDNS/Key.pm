@@ -1,10 +1,10 @@
-package Net::LDNS::Key;
+package DNS::LDNS::Key;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS ':all';
+use DNS::LDNS ':all';
 
 our $VERSION = '0.02';
 
@@ -19,7 +19,7 @@ sub new {
 	my $file = $args{file};
 	if ($args{filename}) {
 	    unless (open FILE, $args{filename}) {
-		$Net::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
+		$DNS::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
 		return;
 	    }
 	    $file = \*FILE;
@@ -30,8 +30,8 @@ sub new {
 	    close $file;
 	}
 
-	$Net::LDNS::last_status = $status;
-	$Net::LDNS::line_nr = $line_nr;
+	$DNS::LDNS::last_status = $status;
+	$DNS::LDNS::line_nr = $line_nr;
 	if (!defined $key) {
 	    return;
 	}
@@ -46,32 +46,32 @@ sub new {
 sub set_pubkey_owner {
     my ($self, $owner) = @_;
     my $oldowner = $self->pubkey_owner;
-    Net::LDNS::GC::disown(my $old = $self->pubkey_owner);
+    DNS::LDNS::GC::disown(my $old = $self->pubkey_owner);
     $self->_set_pubkey_owner($owner);
-    return Net::LDNS::GC::own($owner, $self);
+    return DNS::LDNS::GC::own($owner, $self);
 }
 
 sub pubkey_owner {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_pubkey_owner, $self);
+    return DNS::LDNS::GC::own($self->_pubkey_owner, $self);
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
-  key = new Net::LDNS::Key
-  key = new Net::LDNS::Key(file => \*FILE)
-  key = new Net::LDNS::Key(filename => 'keyfile')
+  key = new DNS::LDNS::Key
+  key = new DNS::LDNS::Key(file => \*FILE)
+  key = new DNS::LDNS::Key(filename => 'keyfile')
 
   str = key->to_string
   key->print(\*OUTPUT)

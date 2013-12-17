@@ -1,5 +1,5 @@
 # Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl Net-LDNS.t'
+# `make test'. After `make install' it should work as `perl DNS-LDNS.t'
 
 #########################
 
@@ -9,7 +9,7 @@ use strict;
 use warnings;
 
 use Test::More tests => 2;
-BEGIN { use_ok('Net::LDNS') };
+BEGIN { use_ok('DNS::LDNS') };
 
 
 my $fail = 0;

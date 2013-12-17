@@ -1,44 +1,44 @@
-package Net::LDNS::DNSSecDataChain;
+package DNS::LDNS::DNSSecDataChain;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS;
+use DNS::LDNS;
 
 our $VERSION = '0.02';
 
 sub rrset {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_rrset, $self);
+    return DNS::LDNS::GC::own($self->_rrset, $self);
 }
 
 sub signatures {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_signatures, $self);
+    return DNS::LDNS::GC::own($self->_signatures, $self);
 }
 
 sub parent {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_parent, $self);
+    return DNS::LDNS::GC::own($self->_parent, $self);
 }
 
 sub derive_trust_tree {
     my ($self, $rr) = @_;
 
-    if (!Net::LDNS::GC::is_owned($rr) or Net::LDNS::GC::owner($rr) ne $self) {
+    if (!DNS::LDNS::GC::is_owned($rr) or DNS::LDNS::GC::owner($rr) ne $self) {
 	die "The rr ($rr) must be in the data chain ($self)";
     }
-    return Net::LDNS::GC::own($self->_derive_trust_tree($rr), $self);
+    return DNS::LDNS::GC::own($self->_derive_trust_tree($rr), $self);
 }
 
 sub derive_trust_tree_time {
     my ($self, $rr, $checktime) = @_;
 
-    if (!Net::LDNS::GC::is_owned($rr) or Net::LDNS::GC::owner($rr) ne $self) {
+    if (!DNS::LDNS::GC::is_owned($rr) or DNS::LDNS::GC::owner($rr) ne $self) {
 	die "The rr ($rr) must be in the data chain ($self)";
     }
-    return Net::LDNS::GC::own(
+    return DNS::LDNS::GC::own(
 	$self->_derive_trust_tree_time($rr, $checktime), $self);
 }
 
@@ -46,13 +46,13 @@ sub derive_trust_tree_time {
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
-  chain = new Net::LDNS::DNSSecDataChain
+  chain = new DNS::LDNS::DNSSecDataChain
   chain->print(fp)
   chain->derive_trust_tree(rr)
   chain->derive_trust_tree_time(rr, checktime)

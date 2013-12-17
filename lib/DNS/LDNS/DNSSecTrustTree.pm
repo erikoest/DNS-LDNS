@@ -1,22 +1,22 @@
-package Net::LDNS::DNSSecTrustTree;
+package DNS::LDNS::DNSSecTrustTree;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS;
+use DNS::LDNS;
 
 our $VERSION = '0.02';
 
 sub add_parent {
     my ($self, $parent, $sig, $parent_status) = @_;
 
-    if (Net::LDNS::GC::is_owned($parent)) {
+    if (DNS::LDNS::GC::is_owned($parent)) {
 	die "Cannot add to multiple trees.";
     }
     my $s = _add_parent($self, $parent, $sig, $parent_status);
-    Net::LDNS::GC::own($parent, $self);
-    $Net::LDNS::last_status = $s;
+    DNS::LDNS::GC::own($parent, $self);
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
@@ -24,47 +24,47 @@ sub contains_keys {
     my ($self, $trusted_keys) = @_;
 
     my $s = _contains_keys($self, $trusted_keys);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
 sub rr {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_rr, $self);
+    return DNS::LDNS::GC::own($self->_rr, $self);
 }
 
 sub rrset {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_rrset, $self);
+    return DNS::LDNS::GC::own($self->_rrset, $self);
 }
 
 sub parent {
     my ($self, $i) = @_;
-    return Net::LDNS::GC::own($self->_parent($i), $self);
+    return DNS::LDNS::GC::own($self->_parent($i), $self);
 }
 
 sub parent_status {
     my ($self, $i) = @_;
     my $s = _parent_status($self, $i);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
 sub parent_signature {
     my ($self, $i) = @_;
-    return Net::LDNS::GC::own($self->_parent_signature($i), $self);
+    return DNS::LDNS::GC::own($self->_parent_signature($i), $self);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
-  tree = new Net::LDNS::DNSSecTrustTree
+  tree = new DNS::LDNS::DNSSecTrustTree
   tree->print(fp)
   d = tree->depth
   status = tree->add_parent(parent, sig, parent_status)

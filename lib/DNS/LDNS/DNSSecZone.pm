@@ -1,10 +1,10 @@
-package Net::LDNS::DNSSecZone;
+package DNS::LDNS::DNSSecZone;
 
 use 5.008008;
 use strict;
 use warnings;
 
-use Net::LDNS ':all';
+use DNS::LDNS ':all';
 
 our $VERSION = '0.02';
 
@@ -18,8 +18,8 @@ sub new {
 
     if ($args{filename}) {
 	unless (open FILE, $args{filename}) {
-	    $Net::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
-	    $Net::LDNS::line_nr = 0;
+	    $DNS::LDNS::last_status = &LDNS_STATUS_FILE_ERR;
+	    $DNS::LDNS::line_nr = 0;
 	    return;
 	}
 
@@ -44,8 +44,8 @@ sub new {
 	close $file;
     }
 
-    $Net::LDNS::last_status = $status;
-    $Net::LDNS::line_nr = $line_nr;
+    $DNS::LDNS::last_status = $status;
+    $DNS::LDNS::line_nr = $line_nr;
     if (!defined $zone) {
 	return;
     }
@@ -55,17 +55,17 @@ sub new {
 
 sub soa {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_soa, $self);
+    return DNS::LDNS::GC::own($self->_soa, $self);
 }
 
 sub names {
     my $self = shift;
-    return Net::LDNS::GC::own($self->_names, $self);
+    return DNS::LDNS::GC::own($self->_names, $self);
 }
 
 sub find_rrset {
     my ($self, $name, $type) = @_;
-    return Net::LDNS::GC::own($self->_find_rrset($name, $type), $self);
+    return DNS::LDNS::GC::own($self->_find_rrset($name, $type), $self);
 }
 
 sub add_rr {
@@ -73,29 +73,29 @@ sub add_rr {
 
     # Set a copy of the rr in case it is already owned
     my $s = _add_rr($self, my $copy = $rr->clone);
-    $Net::LDNS::last_status = $s;
-    Net::LDNS::GC::own($copy, $self);
+    $DNS::LDNS::last_status = $s;
+    DNS::LDNS::GC::own($copy, $self);
     return $s;
 }
 
 sub add_empty_nonterminals {
     my $self = shift;
     my $s = _add_empty_nonterminals($self);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
 sub mark_glue {
     my $self = shift;
     my $s = _mark_glue($self);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
 sub sign {
     my ($self, $keylist, $policy, $flags) = @_;
     my $s = _sign($self, $keylist, $policy, $flags);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
@@ -104,38 +104,38 @@ sub sign_nsec3 {
 	$signflags) = @_;
     my $s = _sign_nsec3($self, $keylist, $policy, $algorithm, $flags, 
 	$iterations, $salt, $signflags);
-    $Net::LDNS::last_status = $s;
+    $DNS::LDNS::last_status = $s;
     return $s;
 }
 
 sub to_string {
-    return "Net::LDNS::DNSSecZone::to_string is not yet implemented";
+    return "DNS::LDNS::DNSSecZone::to_string is not yet implemented";
 }
 
 sub DESTROY {
-    Net::LDNS::GC::free($_[0]);
+    DNS::LDNS::GC::free($_[0]);
 }
 
 1;
 =head1 NAME
 
-Net::LDNS - Perl extension for the ldns library
+DNS::LDNS - Perl extension for the ldns library
 
 =head1 SYNOPSIS
 
-  use Net::LDNS ':all'
+  use DNS::LDNS ':all'
 
-  my z = new Net::LDNS::DNSSecZone(
+  my z = new DNS::LDNS::DNSSecZone(
     filename => '/path/to/myzone',
-    origin => new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'myzone'), #optional
+    origin => new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'myzone'), #optional
     ttl => 3600, #optional
     class => LDNS_RR_CLASS_, #optional
   )
-  my z = new Net::LDNS::DNSSecZone(
+  my z = new DNS::LDNS::DNSSecZone(
     file => \*FILE,
     origin => ..., ttl => ..., class => ...
   )
-  my z = new Net::LDNS::DNSSecZone
+  my z = new DNS::LDNS::DNSSecZone
 
   rr = z->soa
   rbtree = z->names
