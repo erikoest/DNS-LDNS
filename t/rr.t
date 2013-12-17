@@ -1,4 +1,4 @@
-use Test::More tests => 29;
+use Test::More tests => 22;
 
 use DNS::LDNS ':all';
 
@@ -6,66 +6,6 @@ BEGIN { use_ok('DNS::LDNS') };
 
 my $rr1 = new DNS::LDNS::RR;
 isa_ok($rr1, 'DNS::LDNS::RR', 'Create empty rr');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_SOA,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    owner => 'myzone.com',
-    serial => '1917110701',
-    mname => 'email.myzone.com',
-    rname => 'ns1.myzone.com',
-    refresh => 10000,
-    retry => 3000,
-    expire => 400000,
-    minimum => 6000
-);
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create SOA rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_A,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    address => '127.0.0.1');
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create A rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_AAAA,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    address => '::1');
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create AAAA rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_CNAME,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    cname => 'the.host.myzone.com');
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create CNAME rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_NS,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    nsdname => 'ns2.myzone.com');
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create NS rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_TXT,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    txtdata => 'foo bar');
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create TXT rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_DS,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    keytag => 18937, 
-    algorithm => 8,
-    digtype => 1,
-    digest => '9e01c0c60562da59e7bd1c9ab7321a9c99669664');
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create DS rr shorthand');
 
 $rr1 = new DNS::LDNS::RR(
     type => LDNS_RR_TYPE_DNSKEY,

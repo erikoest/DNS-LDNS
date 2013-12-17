@@ -68,9 +68,6 @@ sub new {
 		    return;
 		}
 	    }
-	    else {
-		$rr->_set_rdata_by_type(%args);
-	    }
 	}
     }
 
@@ -79,104 +76,6 @@ sub new {
 	return;
     }
     return $rr;
-}
-
-sub _set_rdata_by_type {
-    my ($rr, %args) = @_;
-
-    my %args_by_rr_type = (
-	&LDNS_RR_TYPE_A => [
-	     { name => 'address', type => &LDNS_RDF_TYPE_A } ],
-	&LDNS_RR_TYPE_AAAA => [
-	     { name => 'address', type => &LDNS_RDF_TYPE_AAAA } ],
-	&LDNS_RR_TYPE_CNAME => [
-	     { name => 'cname', type => &LDNS_RDF_TYPE_DNAME } ],
-	&LDNS_RR_TYPE_DNSKEY => [ 
-	     { name => 'flags', type => &LDNS_RDF_TYPE_INT16 }, 
-	     { name => 'protocol', type => &LDNS_RDF_TYPE_INT8 }, 
-	     { name => 'algorithm', type => &LDNS_RDF_TYPE_ALG }, 
-	     { name => 'key', type => &LDNS_RDF_TYPE_B64 } ],
-	&LDNS_RR_TYPE_DS => [
-	     { name => 'keytag', type => &LDNS_RDF_TYPE_INT16 }, 
-	     { name => 'algorithm', type => &LDNS_RDF_TYPE_ALG }, 
-	     { name => 'digtype', type => &LDNS_RDF_TYPE_INT8 }, 
-	     { name => 'digest', type => &LDNS_RDF_TYPE_HEX } ],
-	&LDNS_RR_TYPE_MX => [ 
-	     { name => 'preference', type => &LDNS_RDF_TYPE_INT16 }, 
-	     { name => 'exchange', type => &LDNS_RDF_TYPE_DNAME } ],
-	&LDNS_RR_TYPE_NAPTR => [
-	     { name => 'order', type => &LDNS_RDF_TYPE_INT16 },
-	     { name => 'preference', type => &LDNS_RDF_TYPE_INT16 },
-	     { name => 'flags', type => &LDNS_RDF_TYPE_STR },
-	     { name => 'service', type => &LDNS_RDF_TYPE_STR },
-	     { name => 'regexp', type => &LDNS_RDF_TYPE_STR },
-	     { name => 'replacement', type => &LDNS_RDF_TYPE_DNAME } ],
-	&LDNS_RR_TYPE_NS => [ 
-	     { name => 'nsdname', type => &LDNS_RDF_TYPE_DNAME } ],
-	&LDNS_RR_TYPE_NSEC => [ 
-	     { name => 'nxtdname', type => &LDNS_RDF_TYPE_DNAME }, 
-	     { name => 'typelist', type => &LDNS_RDF_TYPE_NSEC } ],
-	&LDNS_RR_TYPE_NSEC3 => [ 
-	     { name => 'hashalgo', type => &LDNS_RDF_TYPE_INT8 }, 
-	     { name => 'flags', type => &LDNS_RDF_TYPE_INT8 }, 
-	     { name => 'iterations', type => &LDNS_RDF_TYPE_INT16 }, 
-	     { name => 'salt', type => &LDNS_RDF_TYPE_NSEC3_SALT }, 
-	     { name => 'hnxtname', type => &LDNS_RDF_TYPE_NSEC3_NEXT_OWNER }, 
-	     { name => 'typelist', type => &LDNS_RDF_TYPE_NSEC } ],
-	&LDNS_RR_TYPE_NSEC3PARAM => [
-	     { name => 'hashalgo', type => &LDNS_RDF_TYPE_INT8 }, 
-	     { name => 'flags', type => &LDNS_RDF_TYPE_INT8 }, 
-	     { name => 'iterations', type => &LDNS_RDF_TYPE_INT16 }, 
-	     { name => 'salt', type => &LDNS_RDF_TYPE_NSEC3_SALT } ],
-	&LDNS_RR_TYPE_RRSIG => [
-	     { name => 'coveredtype', type =>&LDNS_RDF_TYPE_TYPE  }, 
-	     { name => 'algorithm', type => &LDNS_RDF_TYPE_ALG }, 
-	     { name => 'labels', type => &LDNS_RDF_TYPE_INT8 }, 
-	     { name => 'orgttl', type => &LDNS_RDF_TYPE_INT32 }, 
-	     { name => 'sigexpiration', type => &LDNS_RDF_TYPE_TIME }, 
-	     { name => 'siginception', type => &LDNS_RDF_TYPE_TIME },
-	     { name => 'keytag', type => &LDNS_RDF_TYPE_INT16 }, 
-	     { name => 'signame', type => &LDNS_RDF_TYPE_DNAME }, 
-	     { name => 'sig', type => &LDNS_RDF_TYPE_B64 } ],
-	&LDNS_RR_TYPE_SOA => [
-	     { name => 'mname', type => &LDNS_RDF_TYPE_DNAME }, 
-	     { name => 'rname', type => &LDNS_RDF_TYPE_DNAME }, 
-	     { name => 'serial', type => &LDNS_RDF_TYPE_INT32 }, 
-	     { name => 'refresh', type => &LDNS_RDF_TYPE_PERIOD,
-	       default => $DNS::LDNS::DEFAULT_SOA_REFRESH }, 
-	     { name => 'retry', type => &LDNS_RDF_TYPE_PERIOD,
-	       default => $DNS::LDNS::DEFAULT_SOA_RETRY },
-	     { name => 'expire', type => &LDNS_RDF_TYPE_PERIOD,
-	       default => $DNS::LDNS::DEFAULT_SOA_EXPIRE },
-	     { name => 'minimum', type => &LDNS_RDF_TYPE_PERIOD, 
-	       default => $DNS::LDNS::DEFAULT_SOA_MINIMUM } ],
-	&LDNS_RR_TYPE_SRV => [ 
-	     { name => 'priority', type => &LDNS_RDF_TYPE_INT16 }, 
-	     { name => 'weight', type => &LDNS_RDF_TYPE_INT16 }, 
-	     { name => 'port', type => &LDNS_RDF_TYPE_INT16 }, 
-	     { name => 'target', type => &LDNS_RDF_TYPE_DNAME } ],
-	&LDNS_RR_TYPE_TXT => [ 
-	     { name => 'txtdata', type => &LDNS_RDF_TYPE_STR } ],
-    );
-
-    if (!exists $args_by_rr_type{$args{type}}) {
-	croak "Missing parameter 'rdata'";
-    }
-
-    my @rdata;
-    for my $p (@{$args_by_rr_type{$args{type}}}) {
-	my $val = $args{$p->{name}};
-	if (!defined $val and exists $p->{default}) {
-	    $val = $p->{default};
-	}
-	if (!defined $val) {
-	    croak "Missing parameter '".$p->{name}."'";
-	}
-	my $r = new DNS::LDNS::RData($p->{type}, $val)
-	    or croak "Bad parameter '".$p->{name}."'";
-	push @rdata, $r;
-    }
-    $rr->set_rdata(@rdata);
 }
 
 sub owner {
