@@ -1,4 +1,4 @@
-use Test::More tests => 22;
+use Test::More tests => 14;
 
 use DNS::LDNS ':all';
 
@@ -6,99 +6,6 @@ BEGIN { use_ok('DNS::LDNS') };
 
 my $rr1 = new DNS::LDNS::RR;
 isa_ok($rr1, 'DNS::LDNS::RR', 'Create empty rr');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_DNSKEY,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    flags => 257,
-    protocol => 3,
-    algorithm => 8,
-    key => 'AwEAAcJxQ7AQ4fc5zvegukR+LEAMQ+w0ASD3n0Bmz2cmbIAFUYRoAzhPalQYXkI65iLHl7d7nDbDTiGgN+GoIogNdGzUIe7izg9XyjrWiZiCttysE6XPONN0Ccehd52/BI6cdnC3Xri7TtvKgLIcnlqO7XLMEZoSDUFsAk8G6Xj9VHb6WqLqLBiEein2tnxWsoNUerUd0bvEUEGNenQDbCeNUKF5PT6Mck4fSHCU0so4bpAlSEPsxrFl0F+36TlKLLEDEVspA3J1tyVV6tVhPueYrfXoWlbRRp/SZdl2KHJPY94f4xgH4LC5Frw8044fnk0DdbIwMZhZPsrDiXFDcIVPUdk='
-);
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create DNSKEY rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_NSEC,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    nxtdname => 'foo.bar.org.',
-    typelist => 'A NS SOA MX NSEC DNSKEY'
-);
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create NSEC rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_NSEC3,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    hashalgo => 1,
-    flags => 1,
-    iterations => 5,
-    salt => '215551b763398b60',
-    hnxtname => '4po5kmooep0pdess24ia7d58clj7chcm',
-    typelist => 'NS SOA RRSIG DNSKEY NSEC3PARAM'
-);
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create NSEC3 rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_NSEC3PARAM,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    hashalgo => 1,
-    flags => 0,
-    iterations => 5,
-    salt => '215551b763398b60',
-);
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create NSEC3PARAM rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_RRSIG,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    coveredtype => 'NSEC3PARAM',
-    algorithm => 8,
-    labels => 1,
-    orgttl => 0,
-    sigexpiration => 20130618001403,
-    siginception => 20130603200715,
-    keytag => 26113,
-    signame => 'no.',
-    sig => 'PliK3avqlfn/b6hvZ8//VTZq/+Wdfge1iuW83S2BnZQcG2y6in9fPaPw1loxmJGRb7z9682p961j4bXInbBgZBgx2+9428xYqfO6uk5bJi+JlpTw0ZESRnzvr+bkTnsoGeGev1uJofS7xfela/V0v8J9hBCCjT0i1jIpMGP9RpI='
-);
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create RRSIG rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_MX,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    preference => 20,
-    exchange => 'foo.bar.org.'
-);
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create MX rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_SRV,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    priority => 0,
-    weight => 0,
-    port => 1234,
-    target => 'fooservice.foo.bar.',
-);
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create SRV rr shorthand');
-
-$rr1 = new DNS::LDNS::RR(
-    type => LDNS_RR_TYPE_NAPTR,
-    class => LDNS_RR_CLASS_CH,
-    ttl => 4321,
-    order => 100,
-    preference => 10,
-    flags => 'U',
-    service => "fooservice",
-    regexp => "(foo|bar)-service\@example.com",
-    replacement => '.',
-);
-isa_ok($rr1, 'DNS::LDNS::RR', 'Create NAPTR rr shorthand');
 
 $rr1 = new DNS::LDNS::RR(
     type => LDNS_RR_TYPE_SOA,
