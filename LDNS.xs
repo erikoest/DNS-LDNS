@@ -2238,7 +2238,7 @@ _set_rtt(resolver, rtt)
 	    int i;
 	    SV** elem;
 	CODE:
-	buff = malloc(sizeof(size_t)*av_len(rtt));
+	buff = malloc(sizeof(size_t)*(av_len(rtt)+1));
 	for (i = 0; i <= av_len(rtt); i++) {
 	    elem = av_fetch(rtt, i, 0);
 	    buff[i] = SvUV(*elem);
