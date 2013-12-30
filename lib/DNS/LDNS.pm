@@ -651,7 +651,7 @@ our @EXPORT = qw(
 	read_anchor_file
 );
 
-our $VERSION = '0.02';
+our $VERSION = '0.05';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -728,27 +728,45 @@ DNS::LDNS - Perl extension for the ldns library
 
   use DNS::LDNS ':all'
 
-  str = rr_type2str(type)
-  str = rr_class2str(class)
-  type = rr_type_by_name(str)
-  class = rr_class_by_name(str)
-  str = pkt_opcode2str(opcode)
-  str = pkt_rcode2str(rcode)
-  error = errorstr_by_id(status)
-  str = DNS::LDNS::last_error
-  status = DNS::LDNS::last_status
-  rr = dnssec_create_nsec(from, to, type)
-  rr = dnssec_create_nsec3(from, to, algorithm, flags, iterations, salt)
-  rr = create_nsec(current, next, rrs)
-  rr = create_nsec3(cur_owner, cur_zone, algorithm, flags, iterations, salt, 
-                    empty_nonterminals)
-  algo = signing_algorithm_by_name(name)
-  bool = key_algorithm_supported(algorithm)
-  rr = read_anchor_file(filename)
-
 =head1 DESCRIPTION
 
-DNS::LDNS is a perl OO-wrapper for the ldns library. For a detailed description on how this library works, you are advised to read the ldns documentation. Here follows a very brief description of the classes included in this package and how they map to the ldns library structures:
+DNS::LDNS is a perl OO-wrapper for the ldns library. A complete list
+of object methods is found in the perldoc for each of the individual
+classes. You may also read the documentation of the ldns library
+(http://www.nlnetlabs.nl/projects/ldns). 
+
+=head2 Brief examples of usage
+
+  use DNS::LDNS ':all'
+
+  my $z = new DNS::LDNS::Zone(filename => '/path/to/myzone');
+  print DNS::LDNS::last_error;
+  my $rr = new DNS::LDNS::RR('mylabel 3600 IN A 168.10.10.10');
+  print $z->soa->to_string;
+  my $rrlist = $z->rrs->push($rr);
+  print $z->to_string;
+
+  my $kl = new DNS::LDNS::KeyList;
+  $kl->push(new DNS::LDNS::Key(filename => 'key1');
+  $kl->push(new DNS::LDNS::Key(filename => 'key2');
+  my $signed = $z->sign($keylist);
+  my $node = $signed->names->first;
+  while (!$node->is_null) {
+    print $node->name->nsec->to_string;
+    $node = $node->next;
+  }
+
+  my $r = new DNS::LDNS::Resolver(filename => '/my/resolv.conf');
+  my $p = $r->send(
+    new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'www.google.com'), 
+    LDNS_RR_TYPE_A, LDNS_RR_CLASS_IN, LDNS_RD);
+  print $p->answer->to_string;
+  print $p->authority->to_string;
+
+=head2 Classes
+
+A description of the classes included and how they map to the ldns
+library structures:
 
 =over 20
 
@@ -762,7 +780,9 @@ Represents a parsed zonefile (maps to the ldns_zone struct)
 
 =item B<DNS::LDNS::RRList>
 
-Represents a list of RRs. This class is also used to represent an RRSet all the dnames and types are equal, (maps to the the ldns_rr_list struct)
+Represents a list of RRs. This class is also used to represent an
+RRSet  all the dnames and types are equal, (maps to the the
+ldns_rr_list struct)
 
 =item B<DNS::LDNS::RR>
 
@@ -770,7 +790,8 @@ Represents a resource record (RR), (maps to the ldns_rr struct)
 
 =item B<DNS::LDNS::RData>
 
-Represents an rdata field or a dname in an RR (maps to the ldns_rdf struct)
+Represents an rdata field or a dname in an RR (maps to the ldns_rdf
+struct)
 
 =item B<DNS::LDNS::Resolver>
 
@@ -790,7 +811,8 @@ Represents a linked list of keys (maps to the ldns_key_list struct)
 
 =item B<DNS::LDNS::DNSSecZone>
 
-Represents a zone with dnssec data (maps to the ldns_dnssec_zone struct)
+Represents a zone with dnssec data (maps to the ldns_dnssec_zone
+struct)
 
 =item B<DNS::LDNS::RBTree>
 
@@ -802,11 +824,14 @@ Represents a node in the RBTree (maps to the ldns_rbnode struct)
 
 =item B<DNS::LDNS::DNSSecName>
 
-Represents a dname in a DNSSecZone and holds a DNSSecRRSets list for this dname, possibly with signatures (maps to the ldns_dnssec_name struct)
+Represents a dname in a DNSSecZone and holds a DNSSecRRSets list for
+this  dname, possibly with signatures (maps to the ldns_dnssec_name
+struct)
 
 =item B<DNS::LDNS::DNSSecRRSets>
 
-Represents a linked list of DNSSec RR sets, possibly with signatures (maps to the ldns_dnssec_rrsets struct)
+Represents a linked list of DNSSec RR sets, possibly with signatures
+(maps  to the ldns_dnssec_rrsets struct)
 
 =item B<DNS::LDNS::DNSSecRRs>
 
@@ -814,39 +839,88 @@ Represents a linked list of RRs (maps to the ldns_dnssec_rrs struct)
 
 =item B<DNS::LDNS::DNSSecDataChain>
 
-Represents a chain of RR, DNSKEY, and DS data used for building a dnssec trust tree (maps to the ldns_dnssec_data_chain struct)
+Represents a chain of RR, DNSKEY, and DS data used for building a
+dnssec  trust tree (maps to the ldns_dnssec_data_chain struct)
 
 =item B<DNS::LDNS::DNSSecTrustTree>
 
-Represents a tree of chained trust relationships from a signed RR to a set of trust anchors (maps to the ldns_dnssec_trust_tree struct).
+Represents a tree of chained trust relationships from a signed RR to a
+set  of trust anchors (maps to the ldns_dnssec_trust_tree struct).
 
 =item B<DNS::LDNS::GC>
 
-Garbage collector. Handles ownership dependencies and freeing data used by the other classes. Used internally only.
+Garbage collector. Handles ownership dependencies and freeing data
+used by  the other classes. Used internally only.
 
 =back
 
-For a lists of object methods see the documentation of each of the individual classes. One thing to note is that some of the classes have a seemingly overlapping functionality. The Zone and RRList are used to represent a generic zone. It may contain dnssec data but treats it like any other dns data and does not have any knowledge of its structure. The DNSSec* and RB* classes are building blocks for representing a signed zone in a more structured way.
+One thing to note is that some of the classes have a seemingly
+overlapping  functionality. The Zone and RRList are used to represent
+a generic zone. It  may contain dnssec data but treats it like any
+other dns data and does not  have any knowledge of its structure. The
+DNSSec* and RB* classes are  building blocks for representing a signed
+zone in a more structured way.
+
+=head2 Static functions
+
+  str = rr_type2str(type)
+  str = rr_class2str(class)
+  type = rr_type_by_name(str)
+  class = rr_class_by_name(str)
+  str = pkt_opcode2str(opcode)
+  str = pkt_rcode2str(rcode)
+  error = errorstr_by_id(status)
+  str = DNS::LDNS::last_error
+  status = DNS::LDNS::last_status
+  rr = dnssec_create_nsec(from, to, type)
+  rr = dnssec_create_nsec3(from, to, algorithm, flags, iterations, salt)
+  rr = create_nsec(current, next, rrs)
+  rr = create_nsec3(cur_owner, cur_zone, algorithm, flags, 
+                    iterations, salt, empty_nonterminals)
+  algo = signing_algorithm_by_name(name)
+  bool = key_algorithm_supported(algorithm)
+  rr = read_anchor_file(filename)
 
 =head2 Object references and cloning
 
-Since some of the objects are found as sub objects within other objects, it is important to know how the wrapper classes handle object references, dependencies and cloning. The general rule is that accessor methods just return a reference to the object while methods inserting data inserts inserts a clone of the object. Most classes have a clone method which can be used if a cloned object is what you really want.
+Since some of the objects are found as sub objects within other
+objects, it  is important to know how the wrapper classes handle
+object references,  dependencies and cloning. The general rule is that
+accessor methods just  return a reference to the object while methods
+inserting data inserts inserts  a clone of the object. Most classes
+have a clone method which can be used if  a cloned object is what you
+really want.
 
 =head3 Examples
 
-DNS::LDNS::Zone::rrs returns a reference to the DNS::LDNS::RRList within the zone, so if you make changes to the RRList you also changes the Zone object. 
+DNS::LDNS::Zone::rrs returns a reference to the DNS::LDNS::RRList
+within  the zone, so if you make changes to the RRList you also
+changes the Zone  object. 
 
-DNS::LDNS::RRList::push(rr) clones the rr, then pushes the cloned rr to the list. Changing the rr afterwards will not change the list.
+DNS::LDNS::RRList::push(rr) clones the rr, then pushes the cloned rr
+to the  list. Changing the rr afterwards will not change the list.
 
-An exception is the Key class which does not have a clone mechanism. In this case we allow a free Key to be added to only one KeyList. Adding it to multiple lists will provoke an error.
+An exception is the Key class which does not have a clone
+mechanism. In this  case we allow a free Key to be added to only one
+KeyList. Adding it to  multiple lists will provoke an error.
 
-The wrapper keeps track of allocated data structures and references. Whenever data is no longer referred to by a perl object, it will be freed.
+The wrapper keeps track of allocated data structures and references.
+Whenever data is no longer referred to by a perl object, it will be
+freed.
 
 =head2 ERROR HANDLING
 
-The purpose for writing this wrapper class has been to be able to process zone file data with good time performance. Data checking and error handling is a bit sparse. Calling a method with wrong argument types will some times kill the application with an intelligible error message, in other cases it may provoke a segmentation fault. Using out-of-range data values, e.g. in array indexes, may also cause unexpected results.
+The purpose for writing this wrapper class has been to be able to
+process zone file data with good time performance. Data checking and
+error handling is a bit sparse. Calling a method with wrong argument
+types will some times kill the application with an intelligible error
+message, in other cases it may provoke a segmentation fault. Using
+out-of-range data values, e.g. in array indexes, may also cause
+unexpected results.
 
-Most constructors and all methods returning a status will update the static DNS::LDNS::last_status variable. Most methods do not return a status and will not reset this variable even though they succeeds.
+Most constructors and all methods returning a status will update the
+static DNS::LDNS::last_status variable. Most methods do not return a
+status and will not reset this variable even though they succeeds.
 
 =head2 EXPORT
 
@@ -1201,6 +1275,7 @@ None by default.
   LDNS_RR_TYPE_X25
 
 =head3 Various defaults and other constants
+
   LDNS_DEFAULT_TTL
   LDNS_PORT
   LDNS_IP4ADDRLEN
@@ -1215,8 +1290,9 @@ None by default.
 =head1 BUGS
 
 This package is currently in a very early stage of development. There
-are probably some bugs. You may also expect that method names and behaviour
-could change without much considerations to backward compatibility.
+are probably some bugs. You may also expect that method names and
+behaviour could still change without much considerations to backward
+compatibility.
 
 =head1 SEE ALSO
 

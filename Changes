@@ -14,3 +14,7 @@ Revision history for Perl extension DNS::LDNS.
 
 0.04  Fri Dec 13 14:15:26 2013
         - Renamed module to DNS::LDNS
+
+0.05  Mon Dec 30 10:14:00 2013
+        - Corrected versioning variable in all classes.
+        - Cleaned up the base class documentation.

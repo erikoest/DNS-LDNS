@@ -7,7 +7,7 @@ use warnings;
 use DNS::LDNS ':all';
 use Carp 'croak';
 
-our $VERSION = '0.02';
+our $VERSION = '0.05';
 
 sub new {
     my $class = shift;

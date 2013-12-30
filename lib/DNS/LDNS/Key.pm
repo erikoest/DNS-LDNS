@@ -6,7 +6,7 @@ use warnings;
 
 use DNS::LDNS ':all';
 
-our $VERSION = '0.02';
+our $VERSION = '0.05';
 
 sub new {
     my ($class, %args) = @_;
