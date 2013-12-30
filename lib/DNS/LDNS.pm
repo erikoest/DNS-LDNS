@@ -737,7 +737,7 @@ classes. You may also read the documentation of the ldns library
 
 =head2 Brief examples of usage
 
-  use DNS::LDNS ':all'
+  use DNS::LDNS ':all';
 
   my $z = new DNS::LDNS::Zone(filename => '/path/to/myzone');
   print DNS::LDNS::last_error;
@@ -747,18 +747,15 @@ classes. You may also read the documentation of the ldns library
   print $z->to_string;
 
   my $kl = new DNS::LDNS::KeyList;
-  $kl->push(new DNS::LDNS::Key(filename => 'key1');
-  $kl->push(new DNS::LDNS::Key(filename => 'key2');
-  my $signed = $z->sign($keylist);
-  my $node = $signed->names->first;
-  while (!$node->is_null) {
-    print $node->name->nsec->to_string;
-    $node = $node->next;
-  }
+  $kl->push(new DNS::LDNS::Key(filename => 'key');
+  $kl->key(0)->set_pubkey_owner(
+      new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'myzone.org'));
+  my $signedz = $z->sign($kl);
+  print $signedz->to_string;
 
   my $r = new DNS::LDNS::Resolver(filename => '/my/resolv.conf');
   my $p = $r->send(
-    new Net::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'www.google.com'), 
+    new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'www.google.com'), 
     LDNS_RR_TYPE_A, LDNS_RR_CLASS_IN, LDNS_RD);
   print $p->answer->to_string;
   print $p->authority->to_string;
