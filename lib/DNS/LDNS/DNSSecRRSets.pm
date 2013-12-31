@@ -6,7 +6,7 @@ use warnings;
 
 use DNS::LDNS;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 # Note: Since this class does not have a constructor, we can let its child
 # objects be owned by the parent. This reduces the recursion depth on
@@ -48,9 +48,11 @@ sub DESTROY {
 }
 
 1;
+__END__
+
 =head1 NAME
 
-DNS::LDNS - Perl extension for the ldns library
+DNS::LDNS::DNSSecRRSets - Linked list of rrsets in a dnssec zone
 
 =head1 SYNOPSIS
 

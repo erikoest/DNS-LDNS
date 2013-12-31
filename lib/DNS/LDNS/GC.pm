@@ -3,6 +3,8 @@ package DNS::LDNS::GC;
 use strict;
 use warnings;
 
+our $VERSION = '0.06';
+
 my %ref_count;
 my %owned_by;
 
@@ -91,9 +93,11 @@ sub free {
 }
 
 1;
+__END__
+
 =head1 NAME
 
-DNS::LDNS - Perl extension for the ldns library
+DNS::LDNS::GC - Garbage collector, used internally by the DNS::LDNS modules
 
 =head1 SYNOPSIS
 

@@ -1,12 +1,6 @@
 Changes
 const-c.inc
 const-xs.inc
-debian/changelog
-debian/compat
-debian/control
-debian/copyright
-debian/rules
-debian/source/format
 fallback/const-c.inc
 fallback/const-xs.inc
 LDNS.xs

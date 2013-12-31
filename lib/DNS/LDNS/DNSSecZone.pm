@@ -6,7 +6,7 @@ use warnings;
 
 use DNS::LDNS ':all';
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub new {
     my ($class, %args) = @_;
@@ -117,9 +117,11 @@ sub DESTROY {
 }
 
 1;
+__END__
+
 =head1 NAME
 
-DNS::LDNS - Perl extension for the ldns library
+DNS::LDNS::DNSSecZone - Zone with dnssec data
 
 =head1 SYNOPSIS
 

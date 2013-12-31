@@ -6,7 +6,7 @@ use warnings;
 
 use DNS::LDNS;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub add_parent {
     my ($self, $parent, $sig, $parent_status) = @_;
@@ -56,9 +56,11 @@ sub parent_signature {
 }
 
 1;
+__END__
+
 =head1 NAME
 
-DNS::LDNS - Perl extension for the ldns library
+DNS::LDNS::DNSSecTrustTree - Trust tree from signed RR to trust anchors
 
 =head1 SYNOPSIS
 

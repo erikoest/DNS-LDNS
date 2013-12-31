@@ -18,3 +18,6 @@ Revision history for Perl extension DNS::LDNS.
 0.05  Mon Dec 30 10:14:00 2013
         - Corrected versioning variable in all classes.
         - Cleaned up the base class documentation.
+
+0.06  Tue Dec 31 12:17:00 2013
+        - Corrected pod syntax

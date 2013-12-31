@@ -6,7 +6,7 @@ use warnings;
 
 use DNS::LDNS;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub new {
     my ($class, $type, $str) = @_;
@@ -32,9 +32,11 @@ sub DESTROY {
 }
 
 1;
+__END__
+
 =head1 NAME
 
-DNS::LDNS - Perl extension for the ldns library
+DNS::LDNS::RData - Rdata field or a dname in an rr
 
 =head1 SYNOPSIS
 

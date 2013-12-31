@@ -6,7 +6,7 @@ use warnings;
 
 use DNS::LDNS;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 # Note: This class does not have a constructor. Thus, it can not be created
 # as an individual object. The data structure of the object will always be 
@@ -37,9 +37,11 @@ sub DESTROY {
 }
 
 1;
+__END__
+
 =head1 NAME
 
-DNS::LDNS - Perl extension for the ldns library
+DNS::LDNS::RBNode - Node in the RBTree
 
 =head1 SYNOPSIS
 

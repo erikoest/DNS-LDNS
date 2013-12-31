@@ -6,7 +6,7 @@ use warnings;
 
 use DNS::LDNS;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub rrset {
     my $self = shift;
@@ -44,9 +44,11 @@ sub derive_trust_tree_time {
 
 
 1;
+__END__
+
 =head1 NAME
 
-DNS::LDNS - Perl extension for the ldns library
+DNS::LDNS::DNSSecDataChain - DNSSec data chain element
 
 =head1 SYNOPSIS
 
