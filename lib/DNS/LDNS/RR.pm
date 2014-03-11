@@ -44,8 +44,8 @@ sub new {
 	    }
 
 	    $rr = _new_from_file($file, 
-				 $args{default_ttl} || $DNS::LDNS::DEFAULT_TTL, 
 				 $args{origin} || $DNS::LDNS::DEFAULT_ORIGIN, 
+				 $args{default_ttl} || $DNS::LDNS::DEFAULT_TTL, 
 				 $status, $line_nr);
 	    if ($args{filename}) {
 		close $file;
@@ -370,7 +370,7 @@ DNS::LDNS::RR - Resource record
   my rr = new DNS::LDNS::RR(
     str => 'mylabel 3600 IN A 168.10.10.10',
     default_ttl => 3600, # optional,
-    origin => new DNS::LDNS::RData(LDNS_RDF_TYPE_NAME, 'myzone.'), " # optional
+    origin => new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'myzone.'), " # optional
   )
   my rr = new DNS::LDNS::RR(
     filename => '/path/to/rr',
@@ -383,7 +383,7 @@ DNS::LDNS::RR - Resource record
     rdata => [new DNS::LDNS::RData(...), new DNS::LDNS::RData(...), ...],
     class => LDNS_RR_CLASS_IN, # optional
     ttl => 3600, # optional
-    owner => new DNS::LDNS::RData(LDNS_RDF_TYPE_NAME, 'mylabel'), # optional)
+    owner => new DNS::LDNS::RData(LDNS_RDF_TYPE_DNAME, 'mylabel'), # optional)
   my rr = new DNS::LDNS::RR
 
   rr2 = rr->clone
