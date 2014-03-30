@@ -22,7 +22,7 @@ Revision history for Perl extension DNS::LDNS.
 0.06  Tue Dec 31 12:17:00 2013
         - Corrected pod syntax
 
-(Next release)
+0.50  Sun Mar 30 11:05:23 2014
         - Added prev parameter to the DNS::LDNS::RR::new(str) constructor.
         - Corrected DNS::LDNS::RR::new(file/filename) constructor. Added prev
           parameter, changed the default_ttl and origin parameters to 
