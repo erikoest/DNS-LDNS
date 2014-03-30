@@ -31,9 +31,9 @@ sub new {
 
     if ($file) {
 	$zone = _new_from_file($file, 
-			       $args{origin} || $LDNS::DEFAULT_ORIGIN, 
-			       $args{ttl} || $LDNS::DEFAULT_TTL, 
-			       $args{class} || $LDNS::DEFAULT_CLASS, 
+			       $args{origin}, 
+			       $args{ttl} || 0, 
+			       $args{class} || 0, 
 			       $status, $line_nr);
     }
     else {

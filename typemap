@@ -62,6 +62,10 @@ LDNS_GENERIC_STRUCT
 	sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/__/::/g;\$ntt}\", (void*)$var);
 
 OUTPUT
+LDNS_GENERIC_STRUCT_OPT
+	sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/__/::/g;$ntt=~s/::Opt$//;\$ntt}\", (void*)$var);
+
+OUTPUT
 Mortal_PV
         sv_setsv($arg, sv_2mortal(newSVpv($var, 0)));
         free((void *)$var);
