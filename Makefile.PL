@@ -15,16 +15,21 @@ WriteMakefile(
     NAME              => 'DNS::LDNS',
     VERSION_FROM      => 'lib/DNS/LDNS.pm', # finds $VERSION
     CONFIGURE_REQUIRES => {
-        'Devel::CheckLib' => 0,
+        'Devel::CheckLib'    => 0,
+        'ExtUtil::MakeMaker' => 0,
     },
-    PREREQ_PM         => { # Actually required only by the tests
+    BUILD_REQUIRES    => { # Actually required only by the tests
 	'FindBin'         => 0,
         'Test::More'      => 0,
 	'Test::Exception' => 0,
     },
+    PREREQ_PM         => {
+        'XSLoader'        => 0,
+    },
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/DNS/LDNS.pm', # retrieve abstract from module
-       AUTHOR         => 'Erik Pihl Ostlyngen <erik.ostlyngen@uninett.no>') : ()),
+       AUTHOR         => 'Erik Pihl Ostlyngen <erik.ostlyngen@uninett.no>',
+       LICENSE        => 'perl') : ()),
     LIBS              => ['-lldns'],
     DEFINE            => '',
     INC               => '-I.',

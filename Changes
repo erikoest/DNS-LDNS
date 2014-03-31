@@ -36,3 +36,6 @@ Revision history for Perl extension DNS::LDNS.
           useful after modifying the Zone and RR constructors.
         - More robust Makefile.PL. Check for existence of ldns library
           and perl modules required for the test suite.
+
+(next version)
+        - Added META.yml, and added some more package dependencies.
