@@ -37,5 +37,6 @@ Revision history for Perl extension DNS::LDNS.
         - More robust Makefile.PL. Check for existence of ldns library
           and perl modules required for the test suite.
 
-(next version)
+0.51  Wed Apr 2 09:12:00 2014
         - Added META.yml, and added some more package dependencies.
+        - Compatibility with ldns < 1.6.12.
