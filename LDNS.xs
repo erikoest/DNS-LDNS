@@ -89,6 +89,22 @@ ldns_rr_list *ldns_validate_domain_dnskey_time(
 ldns_rr_list *ldns_validate_domain_ds_time(
                 const ldns_resolver *res, const ldns_rdf *domain, 
                 const ldns_rr_list * keys, time_t check_time);
+ldns_status ldns_verify_rrsig_keylist_time(
+                ldns_rr_list *rrset, ldns_rr *rrsig, 
+                const ldns_rr_list *keys, time_t check_time,
+                ldns_rr_list *good_keys);
+ldns_status ldns_verify_trusted_time(
+                ldns_resolver *res, ldns_rr_list *rrset, 
+                ldns_rr_list *rrsigs, time_t check_time,
+                ldns_rr_list *validating_keys);
+ldns_status ldns_verify_rrsig_time(
+                ldns_rr_list *rrset, ldns_rr *rrsig, 
+                ldns_rr *key, time_t check_time);
+ldns_status ldns_verify_time(ldns_rr_list *rrset,
+                                    ldns_rr_list *rrsig,
+                                    const ldns_rr_list *keys,
+                                    time_t check_time,
+                                    ldns_rr_list *good_keys);   
 
 ldns_dnssec_trust_tree *ldns_dnssec_derive_trust_tree_time(
                 ldns_dnssec_data_chain *data_chain, 
@@ -114,6 +130,33 @@ ldns_rr_list *ldns_validate_domain_ds_time(
     Perl_croak(aTHX_ "function ldns_validate_domain_ds_time is not implemented in this version of ldns");
 }
 
+ldns_status ldns_verify_rrsig_keylist_time(
+                ldns_rr_list *rrset, ldns_rr *rrsig, 
+                const ldns_rr_list *keys, time_t check_time,
+                ldns_rr_list *good_keys) {
+    Perl_croak(aTHX_ "function ldns_verify_rrsig_keylist_time is not implemented in this version of ldns");
+}
+
+ldns_status ldns_verify_trusted_time(
+                ldns_resolver *res, ldns_rr_list *rrset, 
+                ldns_rr_list *rrsigs, time_t check_time,
+                ldns_rr_list *validating_keys) {
+    Perl_croak(aTHX_ "function ldns_verify_trusted_time is not implemented in this version of ldns");
+}
+
+ldns_status ldns_verify_rrsig_time(
+                ldns_rr_list *rrset, ldns_rr *rrsig, 
+                ldns_rr *key, time_t check_time) {
+    Perl_croak(aTHX_ "function ldns_verify_rrsig_time is not implemented in this version of ldns");
+}
+
+ldns_status ldns_verify_time(ldns_rr_list *rrset,
+                                    ldns_rr_list *rrsig,
+                                    const ldns_rr_list *keys,
+                                    time_t check_time,
+                                    ldns_rr_list *good_keys) {
+    Perl_croak(aTHX_ "function ldns_verify_time is not implemented in this version of ldns");
+}
 
 #endif
 
