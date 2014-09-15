@@ -1294,7 +1294,7 @@ ldns_rdf_clone(rdf)
 	ALIAS:
 	clone = 1
 
-const char*
+Mortal_PV
 ldns_rdf2str(rdf)
 	DNS__LDNS__RData rdf;
 	ALIAS:
