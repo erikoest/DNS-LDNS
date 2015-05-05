@@ -8,7 +8,7 @@ build_requires:
   Test::More: 0
 configure_requires:
   Devel::CheckLib: 0
-  ExtUtil::MakeMaker: 0
+  ExtUtils::MakeMaker: 0
 distribution_type: module
 dynamic_config: 0
 generated_by: 'ExtUtils::MakeMaker version 6.57_05'
@@ -23,4 +23,4 @@ no_index:
     - inc
 requires:
   XSLoader: 0
-version: 0.51
+version: 0.52
