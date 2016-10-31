@@ -16,7 +16,7 @@ WriteMakefile(
     VERSION_FROM      => 'lib/DNS/LDNS.pm', # finds $VERSION
     CONFIGURE_REQUIRES => {
         'Devel::CheckLib'    => 0,
-        'ExtUtil::MakeMaker' => 0,
+        'ExtUtils::MakeMaker' => 0,
     },
     BUILD_REQUIRES    => { # Actually required only by the tests
 	'FindBin'         => 0,
