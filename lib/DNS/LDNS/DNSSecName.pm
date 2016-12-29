@@ -6,7 +6,7 @@ use warnings;
 
 use DNS::LDNS ':all';
 
-our $VERSION = '0.52';
+our $VERSION = '0.60';
 
 sub new {
     my $class = shift;
