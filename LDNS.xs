@@ -2184,7 +2184,7 @@ ldns_resolver_nameservers_randomize(resolver)
 	ALIAS:
 	nameservers_randomize = 1
 
-char*
+const char*
 ldns_resolver_tsig_keyname(resolver)
 	DNS__LDNS__Resolver resolver;
 	ALIAS:
@@ -2197,7 +2197,7 @@ ldns_resolver_set_tsig_keyname(resolver, tsig_keyname)
 	ALIAS:
 	set_tsig_keyname = 1
 
-char*
+const char*
 ldns_resolver_tsig_algorithm(resolver)
 	DNS__LDNS__Resolver resolver;
 	ALIAS:
@@ -2210,7 +2210,7 @@ ldns_resolver_set_tsig_algorithm(resolver, tsig_algorithm)
 	ALIAS:
 	set_tsig_algorithm = 1
 
-char*
+const char*
 ldns_resolver_tsig_keydata(resolver)
 	DNS__LDNS__Resolver resolver;
 	ALIAS:
